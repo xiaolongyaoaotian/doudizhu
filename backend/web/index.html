@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>牌友斗地主 · 官方网站</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #ffd76e; --gold-deep: #f0a93c; --ink: #2c1a08;
+    --felt: #0d3b2e; --felt-2: #14614a; --panel: #10352a; --line: #1e5c48;
+    --cream: #f7f1de; --sub: #9db8a8;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--felt); color: var(--cream); overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ---------- 导航（竞品式：logo + 双语导航 + 登录态） ---------- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 22px; height: 62px;
+    background: linear-gradient(180deg, rgba(20,73,58,.97), rgba(13,59,46,.9));
+    border-bottom: 2px solid #e7c76633;
+    box-shadow: 0 4px 18px rgba(0,0,0,.35);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; margin-right: 14px; }
+  .logo .badge {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: linear-gradient(160deg, #ffd76e, #f0a93c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: var(--ink); font-weight: 900;
+    box-shadow: 0 3px 10px rgba(0,0,0,.35);
+  }
+  .logo b { font-size: 19px; color: var(--gold); letter-spacing: 2px; white-space: nowrap; }
+  .nav-links { display: flex; gap: 4px; flex: 1; }
+  .nav-links a {
+    padding: 8px 18px; border-radius: 10px; text-align: center; line-height: 1.25;
+    transition: background .15s;
+  }
+  .nav-links a b { display: block; font-size: 15px; }
+  .nav-links a small { font-size: 10px; color: var(--sub); letter-spacing: 1px; }
+  .nav-links a:hover, .nav-links a.on { background: rgba(231,199,102,.14); }
+  .nav-links a:hover b, .nav-links a.on b { color: var(--gold); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-right .hello { font-size: 13px; color: var(--sub); }
+  .nav-right .hello b { color: var(--gold); }
+  .lang-btn { background: transparent; border: 1px solid #2a8f6d; color: var(--cream); border-radius: 16px; padding: 5px 14px; font-size: 12px; }
+  .burger { display: none; background: transparent; border: none; color: var(--gold); font-size: 24px; }
+
+  /* ---------- Hero：全屏场景大图 + 金色大按钮（竞品式） ---------- */
+  .hero {
+    position: relative; min-height: 640px; height: 92vh; max-height: 860px;
+    display: flex; align-items: center; justify-content: center;
+    background:
+      radial-gradient(ellipse at 50% 110%, rgba(240,169,60,.28), transparent 60%),
+      radial-gradient(ellipse at 20% -10%, #2a8f6d55, transparent 55%),
+      radial-gradient(ellipse at 85% 0%, #7d374255, transparent 55%),
+      linear-gradient(180deg, #0f4d3a, #0d3b2e 70%, #0a2f24);
+    overflow: hidden;
+  }
+  .hero-art { position: absolute; inset: 0; pointer-events: none; }
+  .hero-art .glow {
+    position: absolute; left: 50%; top: 42%; width: 900px; height: 420px; transform: translate(-50%,-50%);
+    background: radial-gradient(ellipse, rgba(255,215,110,.22), transparent 65%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:.7; transform:translate(-50%,-50%) scale(1);} 50% { opacity:1; transform:translate(-50%,-50%) scale(1.08);} }
+  .fcard {
+    position: absolute; width: 74px; height: 104px; border-radius: 10px;
+    background: linear-gradient(160deg, #fffef8, #f3ecd2);
+    border: 2px solid #d8d5c6; color: #23252b;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    padding-left: 10px; font-weight: 900;
+    box-shadow: 0 14px 34px rgba(0,0,0,.45);
+    animation: ffloat 5s ease-in-out infinite;
+  }
+  .fcard small { font-size: 22px; line-height: 1; margin-top: 2px; }
+  .fcard.red { color: #b3372e; }
+  .fcard.king { background: linear-gradient(160deg,#ffe9b0,#f0a93c); color: #7d3742; width: 60px; text-align:center; align-items:center; padding-left: 0; font-size: 13px; }
+  @keyframes ffloat { 0%,100% { transform: translateY(0) rotate(var(--rot)); } 50% { transform: translateY(-22px) rotate(var(--rot)); } }
+  .hero-inner { position: relative; text-align: center; z-index: 2; padding: 0 20px; }
+  .hero-suit { font-size: clamp(40px, 7vw, 76px); color: var(--gold); letter-spacing: 14px; text-shadow: 0 8px 40px rgba(231,199,102,.4); }
+  .hero-title {
+    font-size: clamp(38px, 7.5vw, 88px); font-weight: 900; letter-spacing: 12px;
+    background: linear-gradient(180deg, #fff3c9 20%, #ffd76e 55%, #f0a93c 90%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 6px 18px rgba(240,169,60,.45));
+    margin: 6px 0 4px;
+  }
+  .hero-sub { color: var(--sub); font-size: clamp(14px, 1.6vw, 18px); margin-bottom: 40px; }
+  .dl-big {
+    display: inline-block; padding: 18px 74px; border-radius: 44px;
+    font-size: clamp(18px, 2vw, 24px); font-weight: 900; letter-spacing: 8px;
+    color: var(--ink); background: linear-gradient(180deg, #ffe9a8, #ffd76e 55%, #f0a93c);
+    border: 3px solid #fff3c9;
+    box-shadow: 0 10px 0 #b57e1e, 0 16px 40px rgba(0,0,0,.5), inset 0 2px 0 #fff8;
+    text-shadow: 0 1px 0 #fff8; transition: transform .12s, box-shadow .12s;
+  }
+  .dl-big:hover { transform: translateY(-3px); box-shadow: 0 13px 0 #b57e1e, 0 22px 50px rgba(0,0,0,.55), inset 0 2px 0 #fff8; }
+  .dl-big:active { transform: translateY(4px); box-shadow: 0 4px 0 #b57e1e, 0 8px 22px rgba(0,0,0,.5); }
+  .hero-tip { margin-top: 22px; font-size: 12px; color: var(--sub); }
+  .hero-cta { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .play-web {
+    display: inline-block; padding: 16px 40px; border-radius: 40px;
+    font-size: clamp(15px, 1.8vw, 19px); font-weight: 800; letter-spacing: 2px;
+    color: #ffe9a8; border: 2px solid #ffd76e; background: rgba(231, 199, 102, 0.12);
+    transition: background .15s, transform .12s;
+  }
+  .play-web:hover { background: rgba(231, 199, 102, 0.22); transform: translateY(-2px); }
+
+  .age-badge {
+    position: absolute; right: 26px; bottom: 26px; width: 56px; height: 66px;
+    background: #fff; color: #333; border-radius: 8px; font-size: 11px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.4);
+  }
+  .age-badge b { font-size: 22px; color: #1678ff; }
+
+  /* ---------- 新闻公告面板（竞品式：左活动图 + 右Tab新闻） ---------- */
+  .news-wrap {
+    max-width: 1180px; margin: -70px auto 0; padding: 0 20px; position: relative; z-index: 3;
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 22px;
+  }
+  .event-banner {
+    border-radius: 18px; padding: 30px; min-height: 250px; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #1a6b52, #0f4d3a 60%, #7d3742 130%);
+    border: 1px solid #e7c76644; display: flex; flex-direction: column; justify-content: center; gap: 10px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.4);
+  }
+  .event-banner .tag { color: var(--ink); background: linear-gradient(180deg,#ffe9a8,#f0a93c); border-radius: 16px; padding: 4px 16px; font-weight: 800; font-size: 13px; width: fit-content; }
+  .event-banner h3 { font-size: clamp(22px, 2.6vw, 32px); color: #fff3c9; letter-spacing: 2px; }
+  .event-banner p { color: var(--sub); font-size: 14px; }
+  .event-banner .date { color: var(--gold); font-weight: 700; font-size: 14px; }
+  .event-banner .gifts { display: flex; gap: 12px; margin-top: 8px; }
+  .event-banner .gift { background: rgba(0,0,0,.28); border-radius: 10px; padding: 10px 16px; font-size: 13px; color: #ffe9a8; }
+  .news-panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px 22px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.4);
+  }
+  .news-tabs { display: flex; gap: 6px; border-bottom: 2px solid var(--line); margin-bottom: 6px; }
+  .news-tabs button {
+    background: transparent; border: none; color: var(--sub); font-size: 15px; font-weight: 700;
+    padding: 10px 14px; border-bottom: 3px solid transparent; margin-bottom: -2px;
+  }
+  .news-tabs button.on { color: var(--gold); border-color: var(--gold); }
+  .news-list { min-height: 218px; }
+  .news-item { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px dashed #1e5c48; font-size: 14px; }
+  .news-item .arr { color: var(--gold); font-weight: 900; }
+  .news-item .t { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .news-item .d { color: var(--sub); font-size: 12px; }
+  .news-item:hover .t { color: var(--gold); }
+
+  /* ---------- 截图墙 ---------- */
+  section { max-width: 1180px; margin: 0 auto; padding: 70px 20px; }
+  h2.sec { text-align: center; font-size: clamp(24px, 3vw, 34px); color: var(--gold); margin-bottom: 10px; letter-spacing: 4px; }
+  p.sec-sub { text-align: center; color: var(--sub); font-size: 14px; margin-bottom: 38px; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; }
+  .shot {
+    border-radius: 16px; overflow: hidden; border: 1px solid #e7c76644; position: relative;
+    aspect-ratio: 16/9; box-shadow: 0 12px 34px rgba(0,0,0,.4);
+    transition: transform .18s;
+  }
+  .shot:hover { transform: translateY(-6px); }
+  /* 纯 CSS 游戏画面模拟图 */
+  .shot .table {
+    position: absolute; inset: 12% 8% 18%;
+    border-radius: 50%/42%;
+    background: radial-gradient(ellipse at 50% 30%, var(--felt-2), #0a382b);
+    border: 3px solid #2a8f6d;
+  }
+  .shot.phoenix .table { background: radial-gradient(ellipse at 50% 30%, #6a2230, #3c1119); border-color: #a04a56; }
+  .shot.online .table { background: radial-gradient(ellipse at 50% 30%, #173a6b, #0b1f3d); border-color: #24507e; }
+  .shot .mini-card {
+    position: absolute; width: 13%; height: 30%; border-radius: 3px;
+    background: linear-gradient(160deg,#fffef8,#f3ecd2); border: 1px solid #c9c5b4;
+  }
+  .shot .seat { position: absolute; width: 9%; aspect-ratio: 1; border-radius: 50%; background: #1f7a5c; border: 2px solid var(--gold); }
+  .shot .cap {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 16px; font-size: 13px;
+    background: linear-gradient(transparent, rgba(4,18,13,.9));
+  }
+  .shot .cap b { color: var(--gold); }
+
+  /* ---------- 特色 ---------- */
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
+  .feature { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 28px 22px; text-align: center; transition: transform .18s, border-color .18s; }
+  .feature:hover { transform: translateY(-6px); border-color: #e7c76688; }
+  .feature .ico { font-size: 42px; }
+  .feature h3 { margin: 12px 0 8px; font-size: 17px; color: var(--gold); }
+  .feature p { font-size: 13.5px; color: var(--sub); line-height: 1.75; }
+
+  /* ---------- 下载矩阵（竞品式多渠道） ---------- */
+  .dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+  .dl {
+    background: linear-gradient(170deg, var(--panel), #0a2f24); border: 1px solid #e7c76655; border-radius: 18px;
+    padding: 30px 22px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center;
+    transition: transform .18s, box-shadow .18s;
+  }
+  .dl:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,.45); }
+  .dl .ico { font-size: 44px; }
+  .dl b { font-size: 17px; }
+  .dl span { font-size: 12.5px; color: var(--sub); }
+  .dl a, .dl button {
+    margin-top: 6px; background: linear-gradient(180deg,#ffe9a8,#f0a93c); color: var(--ink);
+    border: none; border-radius: 26px; padding: 11px 34px; font-weight: 800; font-size: 15px; text-decoration: none;
+    box-shadow: 0 4px 0 #b57e1e;
+  }
+  .dl a:active, .dl button:active { transform: translateY(3px); box-shadow: none; }
+
+  /* ---------- 页脚 ---------- */
+  footer { border-top: 1px solid var(--line); padding: 36px 20px 46px; text-align: center; color: #7ea391; font-size: 12.5px; line-height: 1.9; }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 900px) {
+    .nav-links { position: fixed; inset: 62px 0 auto 0; flex-direction: column; background: #0d3b2ef7; padding: 12px 18px 18px; display: none; border-bottom: 2px solid var(--line); }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 12px; }
+    .burger { display: block; margin-left: auto; }
+    .nav-right .hello { display: none; }
+    .news-wrap { grid-template-columns: 1fr; margin-top: -40px; }
+    .hero { min-height: 560px; height: 78vh; }
+  }
+  @media (max-width: 480px) {
+    .fcard { width: 52px; height: 74px; font-size: 13px; }
+    .fcard small { font-size: 16px; }
+    .hero { min-height: 500px; }
+    .dl-big { padding: 15px 48px; letter-spacing: 5px; }
+    section { padding: 50px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#top"><span class="badge">♠</span><b data-i18n="brand">牌友斗地主</b></a>
+  <button class="burger" onclick="document.getElementById('nl').classList.toggle('open')">☰</button>
+  <span class="nav-links" id="nl">
+    <a href="#top" class="on"><b data-i18n="n1">首页</b><small>HOME</small></a>
+    <a href="#shots"><b data-i18n="n2">游戏截图</b><small>SHOTS</small></a>
+    <a href="#features"><b data-i18n="n3">游戏特色</b><small>FEATURES</small></a>
+    <a href="#news"><b data-i18n="n4">新闻资讯</b><small>NEWS</small></a>
+    <a href="#download"><b data-i18n="n5">下载中心</b><small>DOWNLOAD</small></a>
+    <a href="#kefu"><b data-i18n="n6">客服支持</b><small>SUPPORT</small></a>
+  </span>
+  <span class="nav-right">
+    <span class="hello" data-i18n="hello">您好，游客 <b>【登录】</b></span>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">EN</button>
+  </span>
+</nav>
+
+<a id="top"></a>
+<div class="hero">
+  <div class="hero-art">
+    <div class="glow"></div>
+    <div class="fcard" style="left:8%; top:16%; --rot:-14deg; animation-delay:.2s">A<small>♠</small></div>
+    <div class="fcard red" style="left:16%; top:52%; --rot:10deg; animation-delay:.9s">Q<small>♥</small></div>
+    <div class="fcard" style="right:12%; top:20%; --rot:16deg; animation-delay:.5s">K<small>♣</small></div>
+    <div class="fcard red" style="right:20%; top:56%; --rot:-12deg; animation-delay:1.3s">10<small>♦</small></div>
+    <div class="fcard king" style="left:47%; top:6%; --rot:6deg; animation-delay:1.7s">大王<br>JOKER</div>
+    <div class="fcard king" style="right:34%; bottom:8%; --rot:-8deg; animation-delay:.1s">小王<br>JOKER</div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-suit">♠ ♥ ♣ ♦</div>
+    <h1 class="hero-title" data-i18n="hero_title">牌友斗地主</h1>
+    <div class="hero-sub" data-i18n="hero_sub">经典规则 · 联机对战 · 三档 AI · 随时随地开一局</div>
+    <div class="hero-cta">
+      <a class="dl-big" href="#download" data-i18n="dl_game">下载游戏</a>
+      <a class="play-web" id="play-web-btn" href="/h5/" target="_blank" rel="noopener">🌐 <span data-i18n="play_web">网页版立即玩</span></a>
+    </div>
+    <div class="hero-tip" data-i18n="hero_tip">支持 Android / iOS / 网页版 · 网页版无需下载直接开玩</div>
+  </div>
+  <div class="age-badge"><b>12+</b><span>CADPA</span></div>
+</div>
+
+<div class="news-wrap" id="news">
+  <div class="event-banner">
+    <span class="tag" data-i18n="ev_tag">限时活动</span>
+    <h3 data-i18n="ev_h">每日签到 领 2000 积分</h3>
+    <p data-i18n="ev_p">登录游戏即可签到，连续签到积分翻倍，对战胜利再拿底分×加倍×炸弹积分！</p>
+    <span class="date" data-i18n="ev_date">活动长期有效 · 每天 00:00 刷新</span>
+    <div class="gifts"><span class="gift">🪙 +2000</span><span class="gift">🎁 连签翻倍</span><span class="gift">👑 胜场加成</span></div>
+  </div>
+  <div class="news-panel">
+    <div class="news-tabs" id="ntabs">
+      <button class="on" data-cat="newest" data-i18n="nt_new">最新</button>
+      <button data-cat="news" data-i18n="nt_news">新闻</button>
+      <button data-cat="notice" data-i18n="nt_notice">公告</button>
+      <button data-cat="event" data-i18n="nt_event">活动</button>
+    </div>
+    <div class="news-list" id="nlist"></div>
+  </div>
+</div>
+
+<section id="shots">
+  <h2 class="sec" data-i18n="shots_t">游戏截图</h2>
+  <p class="sec-sub" data-i18n="shots_s">还原真实牌桌体验：堆叠手牌、记牌器、托管机器人、结算面板</p>
+  <div class="shots">
+    <div class="shot"><div class="table">
+      <div class="seat" style="left:6%; top:10%"></div><div class="seat" style="right:6%; top:10%"></div>
+      <div class="mini-card" style="left:34%; top:34%; transform:rotate(-8deg)"> </div>
+      <div class="mini-card" style="left:44%; top:32%"> </div>
+      <div class="mini-card" style="left:54%; top:34%; transform:rotate(8deg)"> </div>
+    </div><div class="cap"><b data-i18n="s1">经典牌桌</b> · <span data-i18n="s1p">单机离线，随时随地开一局</span></div></div>
+    <div class="shot phoenix"><div class="table">
+      <div class="mini-card" style="left:20%; top:30%; transform:rotate(-14deg)"> </div>
+      <div class="mini-card" style="left:30%; top:28%; transform:rotate(-7deg)"> </div>
+      <div class="mini-card" style="left:40%; top:27%"> </div>
+      <div class="mini-card" style="left:50%; top:28%; transform:rotate(7deg)"> </div>
+      <div class="mini-card" style="left:60%; top:30%; transform:rotate(14deg)"> </div>
+    </div><div class="cap"><b data-i18n="s2">个性牌背</b> · <span data-i18n="s2p">青竹 / 朱雀 / 自定义 emoji 牌背</span></div></div>
+    <div class="shot online"><div class="table">
+      <div class="seat" style="left:6%; top:10%"></div><div class="seat" style="right:6%; top:10%; background:#a04a56"></div>
+      <div class="mini-card" style="left:42%; top:36%"> </div>
+      <div class="mini-card" style="left:52%; top:36%"> </div>
+    </div><div class="cap"><b data-i18n="s3">联机对战</b> · <span data-i18n="s3p">随机匹配 / 好友房间 / 观战 / 断线重连</span></div></div>
+  </div>
+</section>
+
+<section id="features">
+  <h2 class="sec" data-i18n="features_t">游戏特色</h2>
+  <p class="sec-sub" data-i18n="features_s">完整规则 · 精致体验 · 单机与联机一体</p>
+  <div class="features">
+    <div class="feature"><div class="ico">🃏</div><h3 data-i18n="f1t">经典规则</h3><p data-i18n="f1p">叫地主、加倍、炸弹翻倍、春天计分，牌型完整识别，内置记牌器。</p></div>
+    <div class="feature"><div class="ico">🌐</div><h3 data-i18n="f2t">联机对战</h3><p data-i18n="f2p">随机秒匹配、好友房间观战、断线自动重连，AI 智能接管不掉线。</p></div>
+    <div class="feature"><div class="ico">🤖</div><h3 data-i18n="f3t">三档 AI</h3><p data-i18n="f3p">初级到高级三档 AI，高级 AI 会留牌、算牌、配合队友，思考像真人。</p></div>
+    <div class="feature"><div class="ico">🎭</div><h3 data-i18n="f4t">个性装扮</h3><p data-i18n="f4p">多款牌桌主题与牌背，头像表情随心搭配，中英文界面一键切换。</p></div>
+    <div class="feature"><div class="ico">📴</div><h3 data-i18n="f5t">离线可玩</h3><p data-i18n="f5p">单机模式全程无需网络，火车地铁上也能练习牌技。</p></div>
+    <div class="feature"><div class="ico">🏆</div><h3 data-i18n="f6t">赛季积分</h3><p data-i18n="f6p">每日签到领积分，胜负结算公平透明，对战记录云端保存。</p></div>
+  </div>
+</section>
+
+<section id="download">
+  <h2 class="sec" data-i18n="dl_t">下载中心</h2>
+  <p class="sec-sub" data-i18n="dl_s">多端数据互通 · 选择你的平台立即开玩</p>
+  <div class="dl-grid">
+    <div class="dl"><div class="ico">🤖</div><b>Android</b><span data-i18n="dl_a">APK 安装包 · Android 8.0+</span><a href="/download/android.apk" data-i18n="dl_go">下载安装</a></div>
+    <div class="dl"><div class="ico">🍎</div><b>iOS</b><span data-i18n="dl_i">App Store · iOS 12.0+</span><a href="/download/ios" data-i18n="dl_go2">前往商店</a></div>
+    <div class="dl"><div class="ico">💻</div><b>Windows</b><span data-i18n="dl_w">桌面版 · Win 10/11</span><a href="/download/android.apk" data-i18n="dl_go3">下载安装</a></div>
+    <div class="dl"><div class="ico">🌐</div><b data-i18n="dl_web">网页版</b><span data-i18n="dl_ws">无需安装 · 打开即玩</span><a id="dl-web-link" href="/h5/" data-i18n="dl_play">开始游戏</a></div>
+  </div>
+</section>
+
+<section id="kefu">
+  <h2 class="sec" data-i18n="kf_t">客服支持</h2>
+  <p class="sec-sub" data-i18n="kf_s">常见问题自助处理；充值补单、账号申诉请联系管理员</p>
+  <div class="features">
+    <div class="feature"><div class="ico">🪙</div><h3 data-i18n="k1t">积分与积分</h3><p data-i18n="k1p">签到领积分，胜负影响积分；积分通过充值或活动获得，两者独立。</p></div>
+    <div class="feature"><div class="ico">📶</div><h3 data-i18n="k2t">断线处理</h3><p data-i18n="k2p">重新登录自动回到对局；超时未重连由 AI 托管，战绩照常结算。</p></div>
+    <div class="feature"><div class="ico">💳</div><h3 data-i18n="k3t">充值问题</h3><p data-i18n="k3p">点击「已完成充值」即时到账；异常订单可提交账户名由管理员补单。</p></div>
+  </div>
+</section>
+
+<footer>
+  <div data-i18n="foot_1">牌友斗地主 · 休闲棋牌演示项目</div>
+  <div data-i18n="foot_2">健康游戏忠告：抵制不良游戏，拒绝盗版游戏。注意自我保护，谨防受骗上当。适度游戏益脑，沉迷游戏伤身。合理安排时间，享受健康生活。</div>
+  <div>© 2026 PaiYou DDZ Demo · <span id="stat-line"></span></div>
+</footer>
+
+<script>
+/* ---------- i18n ---------- */
+const I18N = {
+  zh: {
+    brand: '牌友斗地主', hello: '您好，游客 <b>【登录】</b>',
+    n1: '首页', n2: '游戏截图', n3: '游戏特色', n4: '新闻资讯', n5: '下载中心', n6: '客服支持',
+    hero_title: '牌友斗地主', hero_sub: '经典规则 · 联机对战 · 三档 AI · 随时随地开一局',
+    dl_game: '下载游戏', play_web: '网页版立即玩', hero_tip: '支持 Android / iOS / 网页版 · 网页版无需下载直接开玩',
+    ev_tag: '限时活动', ev_h: '每日签到 领 2000 积分', ev_p: '登录游戏即可签到，连续签到积分翻倍，对战胜利再拿底分×加倍×炸弹积分！', ev_date: '活动长期有效 · 每天 00:00 刷新',
+    nt_new: '最新', nt_news: '新闻', nt_notice: '公告', nt_event: '活动',
+    shots_t: '游戏截图', shots_s: '还原真实牌桌体验：堆叠手牌、记牌器、托管机器人、结算面板',
+    s1: '经典牌桌', s1p: '单机离线，随时随地开一局', s2: '个性牌背', s2p: '青竹 / 朱雀 / 自定义 emoji 牌背', s3: '联机对战', s3p: '随机匹配 / 好友房间 / 观战 / 断线重连',
+    features_t: '游戏特色', features_s: '完整规则 · 精致体验 · 单机与联机一体',
+    f1t: '经典规则', f1p: '叫地主、加倍、炸弹翻倍、春天计分，牌型完整识别，内置记牌器。',
+    f2t: '联机对战', f2p: '随机秒匹配、好友房间观战、断线自动重连，AI 智能接管不掉线。',
+    f3t: '三档 AI', f3p: '初级到高级三档 AI，高级 AI 会留牌、算牌、配合队友，思考像真人。',
+    f4t: '个性装扮', f4p: '多款牌桌主题与牌背，头像表情随心搭配，中英文界面一键切换。',
+    f5t: '离线可玩', f5p: '单机模式全程无需网络，火车地铁上也能练习牌技。',
+    f6t: '赛季积分', f6p: '每日签到领积分，胜负结算公平透明，对战记录云端保存。',
+    dl_t: '下载中心', dl_s: '多端数据互通 · 选择你的平台立即开玩',
+    dl_a: 'APK 安装包 · Android 8.0+', dl_i: 'App Store · iOS 12.0+', dl_w: '桌面版 · Win 10/11',
+    dl_web: '网页版', dl_ws: '无需安装 · 打开即玩', dl_go: '下载安装', dl_go2: '前往商店', dl_go3: '下载安装', dl_play: '开始游戏',
+    kf_t: '客服支持', kf_s: '常见问题自助处理；充值补单、账号申诉请联系管理员',
+    k1t: '积分与积分', k1p: '签到领积分，胜负影响积分；积分通过充值或活动获得，两者独立。',
+    k2t: '断线处理', k2p: '重新登录自动回到对局；超时未重连由 AI 托管，战绩照常结算。',
+    k3t: '充值问题', k3p: '点击「已完成充值」即时到账；异常订单可提交账户名由管理员补单。',
+    foot_1: '牌友斗地主 · 休闲棋牌演示项目',
+    foot_2: '健康游戏忠告：抵制不良游戏，拒绝盗版游戏。注意自我保护，谨防受骗上当。适度游戏益脑，沉迷游戏伤身。合理安排时间，享受健康生活。',
+  },
+  en: {
+    brand: 'PaiYou DDZ', hello: 'Hello, guest <b>【Sign In】</b>',
+    n1: 'Home', n2: 'Screenshots', n3: 'Features', n4: 'News', n5: 'Download', n6: 'Support',
+    hero_title: 'PaiYou Dou Dizhu', hero_sub: 'Classic rules · Online play · Three AI tiers · Anywhere, anytime',
+    dl_game: 'Download', play_web: 'Play in Browser', hero_tip: 'Android / iOS / Web · play instantly in the browser',
+    ev_tag: 'EVENT', ev_h: 'Daily Check-in: 2000 Points', ev_p: 'Sign in every day for points. Winning games earns base × multiplier × bombs!',
+    ev_date: 'Long-term event · resets daily at 00:00',
+    nt_new: 'Latest', nt_news: 'News', nt_notice: 'Notices', nt_event: 'Events',
+    shots_t: 'Screenshots', shots_s: 'Real table experience: stacked hands, card counter, robot takeover, settlement panel',
+    s1: 'Classic Table', s1p: 'Offline single player anytime', s2: 'Custom Backs', s2p: 'Bamboo / Phoenix / custom emoji backs', s3: 'Online Battles', s3p: 'Match / friend rooms / spectate / reconnect',
+    features_t: 'Features', features_s: 'Complete rules · polished experience · offline & online',
+    f1t: 'Classic Rules', f1p: 'Bidding, doubling, bomb multipliers and spring scoring with a built-in card counter.',
+    f2t: 'Online Play', f2p: 'Instant matching, friend rooms with spectators, auto-reconnect and AI takeover.',
+    f3t: 'Three AI Tiers', f3p: 'From rookie to expert — expert AI holds bombs, counts cards and cooperates.',
+    f4t: 'Customization', f4p: 'Themes, card backs, avatars and emotes. English / Chinese one-tap switch.',
+    f5t: 'Offline Mode', f5p: 'No network needed — practice on the train or subway.',
+    f6t: 'Season Points', f6p: 'Daily check-in points, transparent settlement, cloud-saved battle records.',
+    dl_t: 'Download', dl_s: 'Cross-platform progress · pick your platform and play',
+    dl_a: 'APK package · Android 8.0+', dl_i: 'App Store · iOS 12.0+', dl_w: 'Desktop · Win 10/11',
+    dl_web: 'Web Version', dl_ws: 'No install · play instantly', dl_go: 'Download', dl_go2: 'App Store', dl_go3: 'Download', dl_play: 'Play Now',
+    kf_t: 'Customer Support', kf_s: 'Self-service FAQ; contact the admin for recharge fixes and appeals',
+    k1t: 'Coins & Points', k1p: 'Check in for points; wins move points. Coins come from recharges and events.',
+    k2t: 'Disconnects', k2p: 'Re-login to rejoin; after timeout AI takes over and results still settle.',
+    k3t: 'Recharges', k3p: 'Coins arrive when you tap "Done". Submit your account name for manual fixes.',
+    foot_1: 'PaiYou Dou Dizhu · Casual card game demo',
+    foot_2: 'Play responsibly. Moderate gaming benefits the mind.',
+  },
+};
+// 网页版游戏地址：GitHub Pages 域名领取后，把 '/h5/' 替换为完整域名（如 'https://user.github.io/repo/h5/'）
+const H5_URL = '/h5/';
+document.getElementById('play-web-btn').href = H5_URL;
+document.getElementById('dl-web-link').href = H5_URL;
+let lang = localStorage.getItem('ddz-lang') || 'zh';
+function applyLang() {
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = I18N[lang][el.dataset.i18n];
+    if (v !== undefined) el.innerHTML = v;
+  });
+  document.getElementById('lang-btn').textContent = lang === 'zh' ? 'EN' : '中文';
+  localStorage.setItem('ddz-lang', lang);
+  renderNews(document.querySelector('.news-tabs button.on').dataset.cat);
+}
+function toggleLang() { lang = lang === 'zh' ? 'en' : 'zh'; applyLang(); }
+
+/* ---------- 新闻数据与 Tab ---------- */
+const NEWS = {
+  newest: [
+    ['全体牌友 · 春天玩法火热上线，翻倍更刺激！', '2026-10-24'],
+    ['新版客户端发布：记牌器、托管机器人全面升级', '2026-10-21'],
+    ['随机匹配优化：30 秒快速开局', '2026-10-18'],
+    ['网页版上线！浏览器直接开玩', '2026-10-15'],
+  ],
+  news: [
+    ['赛事公告：SS28 赛季「星光乐园」10 月 10 日开启', '2026-10-10'],
+    ['玩法上新：癞子斗地主即将和大家见面', '2026-10-08'],
+    ['客户端性能优化，出牌动画更流畅', '2026-10-05'],
+    ['多端数据互通功能全量开放', '2026-10-01'],
+  ],
+  notice: [
+    ['健康游戏公告：合理安排时间，享受健康生活', '2026-09-28'],
+    ['违规行为处理公告（刷分/外号/消极对局）', '2026-09-20'],
+    ['服务器维护公告：每周四 02:00-04:00', '2026-09-15'],
+    ['隐私政策更新说明', '2026-09-10'],
+  ],
+  event: [
+    ['20 周年庆料帝①：免费领 8888 限时积分', '2026-09-23'],
+    ['好友邀请活动：邀请 1 位好友各得 5000 积分', '2026-09-12'],
+    ['连胜挑战赛：赢 5 连胜得限定头像框', '2026-09-06'],
+    ['周末狂欢：充值双倍积分进行中', '2026-09-01'],
+  ],
+};
+let serverAnns = null;
+function renderNews(cat) {
+  if (serverAnns) {
+    const list = serverAnns.filter(a => a.cat === cat).map(a => [a.title, a.time]);
+    document.getElementById('nlist').innerHTML = list.map(([t, d]) =>
+      `<div class="news-item"><span class="arr">></span><span class="t">${t}</span><span class="d">${d}</span></div>`).join('') ||
+      '<div style="color:#7ea391;font-size:13px;padding:10px 0">该分类暂无内容</div>';
+    return;
+  }
+  const list = NEWS[cat] || [];
+  document.getElementById('nlist').innerHTML = list.map(([t, d]) =>
+    `<div class="news-item"><span class="arr">></span><span class="t">${t}</span><span class="d">${d}</span></div>`).join('');
+}
+document.getElementById('ntabs').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('.news-tabs button').forEach(b => b.classList.remove('on'));
+  e.target.classList.add('on');
+  renderNews(e.target.dataset.cat);
+});
+
+/* ---------- 官网安装量上报（platform=web） ---------- */
+const iid = localStorage.getItem('ddz-web-install') || (() => {
+  const id = 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  localStorage.setItem('ddz-web-install', id);
+  return id;
+})();
+fetch('/api/install/report', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ installId: iid, platform: 'web' }) }).catch(() => {});
+fetch('/api/downloads').then(r => r.json()).catch(() => null).then(d => {
+  if (d && d.ok && d.downloads && d.downloads.length) {
+    document.querySelector('.dl-grid').innerHTML = d.downloads.map(x => `
+      <div class="dl"><div class="ico">${x.icon || '📦'}</div><b>${x.name}</b><span>${x.desc}</span><a href="${x.url}" data-i18n="${x.platform === 'web' ? 'dl_play' : 'dl_go'}">${x.platform === 'web' ? '开始游戏' : '下载安装'}</a></div>`).join('');
+  }
+}).catch(() => {});
+fetch('/api/announcements').then(r => r.json()).catch(() => null).then(d => {
+  if (d && d.ok && d.announcements && d.announcements.length) {
+    serverAnns = d.announcements;
+    renderNews(document.querySelector('.news-tabs button.on').dataset.cat);
+  }
+}).catch(() => {});
+fetch('/api/stats', {}).then(r => r.json()).catch(() => null).then(d => {
+  if (d && d.ok) document.getElementById('stat-line').textContent = '注册玩家 ' + d.stats.registered + ' · 累计对局 ' + d.stats.gamesTotal;
+}).catch(() => {});
+
+applyLang();
+</script>
+</body>
+</html>

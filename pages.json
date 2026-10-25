@@ -1,0 +1,56 @@
+{
+  "pages": [
+    {
+      "path": "pages/cover/cover",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "牌友斗地主"
+      }
+    },
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "牌友斗地主"
+      }
+    },
+    {
+      "path": "pages/auth/auth",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "账户"
+      }
+    },
+    {
+      "path": "pages/settings/settings",
+      "style": {
+        "navigationBarTitleText": "设置 · 我的账户"
+      }
+    },
+    {
+      "path": "pages/wallet/wallet",
+      "style": {
+        "navigationBarTitleText": "积分钱包"
+      }
+    },
+    {
+      "path": "pages/online/online",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "联机对战"
+      }
+    },
+    {
+      "path": "pages/records/records",
+      "style": {
+        "navigationBarTitleText": "对战记录"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "牌友斗地主",
+    "navigationBarBackgroundColor": "#0d3b2e",
+    "backgroundColor": "#0d3b2e"
+  }
+}

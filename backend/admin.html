@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>牌友斗地主 · 后台管理</title>
+<style>
+  body { margin: 0; background: #0d3b2e; color: #f3efe2; font-family: -apple-system, "PingFang SC", sans-serif; }
+  header { padding: 16px 24px; background: #124535; border-bottom: 2px solid #1e5c48; display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 20px; margin: 0; color: #e7c766; }
+  header input { background: #0d3b2e; border: 1px solid #1e5c48; color: #f3efe2; padding: 8px 12px; border-radius: 8px; }
+  header button { background: #e7c766; color: #3a2c07; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 700; cursor: pointer; }
+  .stats { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stat-card { background: #124535; border: 1px solid #1e5c48; border-radius: 12px; padding: 14px 20px; min-width: 130px; }
+  .stat-card b { display: block; font-size: 28px; color: #ffe9a8; }
+  .stat-card span { font-size: 12px; color: #9db8a8; }
+  .chart-card { background: #124535; border: 1px solid #1e5c48; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; }
+  .chart-card h3 { margin: 0 0 8px; font-size: 14px; color: #c8d8c0; }
+  .bar { fill: #e7c766; }
+  .bar.active { fill: #7ed6a2; }
+  .bar.inst { fill: #6fa8dc; }
+  .bar.game { fill: #e08c8c; }
+  .axis { font-size: 10px; fill: #9db8a8; }
+  main { padding: 20px 24px; }
+  table { width: 100%; border-collapse: collapse; background: #124535; border-radius: 12px; overflow: hidden; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #1e5c48; font-size: 14px; }
+  th { background: #0f4d3a; color: #c8d8c0; }
+  td .ops button { margin-right: 6px; background: #1f7a5c; color: #fff; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px; }
+  td .ops button.danger { background: #7d3742; }
+  #msg { margin: 12px 0; color: #ffe9a8; min-height: 20px; }
+  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; }
+  .modal { background: #124535; border: 1px solid #e7c76666; border-radius: 12px; padding: 24px; width: 320px; display: flex; flex-direction: column; gap: 12px; }
+  .modal input { background: #0d3b2e; border: 1px solid #1e5c48; color: #f3efe2; padding: 10px; border-radius: 8px; }
+  .records { max-height: 320px; overflow: auto; font-size: 12px; color: #c8d8c0; }
+  .panel { background: #124535; border: 1px solid #1e5c48; border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
+  .panel h2 { font-size: 16px; color: #e7c766; margin: 0 0 12px; }
+  .panel input, .panel select { background: #0d3b2e; border: 1px solid #1e5c48; color: #f3efe2; padding: 7px 10px; border-radius: 6px; font-size: 13px; }
+  .panel button { background: #1f7a5c; color: #fff; border: none; border-radius: 6px; padding: 7px 14px; cursor: pointer; font-size: 13px; margin-right: 6px; }
+  .panel button.gold { background: #e7c766; color: #3a2c07; font-weight: 700; }
+  .panel button.danger { background: #7d3742; }
+  .panel .rowline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 0; border-bottom: 1px dashed #1e5c48; }
+  .panel img.thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #1e5c48; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>♠ 牌友斗地主 · 后台管理</h1>
+  <input id="pwd" type="password" placeholder="管理员密码" value="">
+  <button onclick="load()">加载</button>
+</header>
+<main>
+  <div id="msg"></div>
+  <div class="stats" id="stats-cards"></div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h2>📢 公告管理（前端新闻面板实时联动）</h2>
+      <div class="rowline">
+        <select id="ann-cat"><option value="newest">最新</option><option value="news">新闻</option><option value="notice">公告</option><option value="event">活动</option></select>
+        <input id="ann-title" placeholder="公告标题（60 字内）" style="flex:1">
+        <button class="gold" onclick="annCreate()">发布公告</button>
+      </div>
+      <div id="ann-list"></div>
+    </div>
+    <div class="panel">
+      <h2>⬇️ 下载管理（各平台链接与图标）</h2>
+      <div id="dl-list"></div>
+      <div class="rowline" style="border:none;margin-top:8px">
+        <button class="gold" onclick="dlSave()">保存全部下载配置</button>
+        <button onclick="dlAdd()">添加平台</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>🖼️ 图案素材库（玩家上传的头像 / 牌背图案）</h2>
+    <div class="rowline">
+      <input type="file" id="up-file" accept="image/png,image/jpeg,image/webp,image/gif">
+      <button class="gold" onclick="uploadFile()">上传素材</button>
+      <span style="font-size:12px;color:#9db8a8">≤512KB，保存于服务器，玩家端可选择使用</span>
+    </div>
+    <div id="up-list" style="display:flex;flex-wrap:wrap;gap:10px;padding-top:10px"></div>
+  </div>
+
+  <div class="stats" id="stats-cards" style="margin-top:0"></div>
+  <div class="chart-card"><h3>近 7 天：注册 / 活跃 / 安装 / 对局</h3><div id="charts"></div></div>
+  <table>
+    <thead><tr><th>账户</th><th>积分</th><th>积分</th><th>局数</th><th>胜场</th><th>签到</th><th>记录条数</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</main>
+<div class="modal-mask" id="mask">
+  <div class="modal">
+    <b id="modal-title">充值</b>
+    <div id="modal-user" style="color:#c8d8c0"></div>
+    <input id="modal-amount" type="number" placeholder="数量" value="12000">
+    <button style="background:#e7c766;color:#3a2c07;border:none;border-radius:8px;padding:10px;font-weight:700;cursor:pointer" onclick="modalOk()">确定</button>
+    <button style="background:#1f7a5c;color:#fff;border:none;border-radius:8px;padding:10px;cursor:pointer" onclick="closeModal()">取消</button>
+  </div>
+</div>
+<div class="modal-mask" id="records-mask">
+  <div class="modal" style="width:420px">
+    <b id="records-title">对战记录</b>
+    <div class="records" id="records-body"></div>
+    <button style="background:#1f7a5c;color:#fff;border:none;border-radius:8px;padding:10px;cursor:pointer" onclick="document.getElementById('records-mask').style.display='none'">关闭</button>
+  </div>
+</div>
+<script>
+let target = '';
+
+/* ---------- 公告管理 ---------- */
+async function loadAnns() {
+  const d = await api('/api/admin/announcements');
+  if (!d.ok) return;
+  document.getElementById('ann-list').innerHTML = d.announcements.map(a => `
+    <div class="rowline">
+      <select onchange="annUpdate('${a.id}', this.value)">
+        ${['newest','news','notice','event'].map(c => `<option value="${c}" ${a.cat === c ? 'selected' : ''}>${{newest:'最新',news:'新闻',notice:'公告',event:'活动'}[c]}</option>`).join('')}
+      </select>
+      <input style="flex:1" value="${a.title.replace(/"/g, '&quot;')}" onchange="annUpdate('${a.id}', null, this.value)">
+      <button class="danger" onclick="annDelete('${a.id}')">删除</button>
+    </div>`).join('') || '<div style="color:#7ea391;font-size:13px">暂无公告</div>';
+}
+async function annCreate() {
+  const d = await api('/api/admin/announcements', { op: 'create', cat: document.getElementById('ann-cat').value, title: document.getElementById('ann-title').value });
+  msg(d.ok ? '公告已发布' : d.error);
+  loadAnns();
+}
+async function annUpdate(id, cat, title) {
+  const d = await api('/api/admin/announcements', { op: 'update', id, cat: cat || undefined, title: title || undefined });
+  msg(d.ok ? '公告已更新（前端实时生效）' : d.error);
+  loadAnns();
+}
+async function annDelete(id) {
+  if (!confirm('确定删除该公告？')) return;
+  const d = await api('/api/admin/announcements', { op: 'delete', id });
+  msg(d.ok ? '公告已删除' : d.error);
+  loadAnns();
+}
+/* ---------- 下载管理 ---------- */
+let dlData = [];
+async function loadDls() {
+  const d = await api('/api/admin/downloads');
+  if (!d.ok) return;
+  dlData = d.downloads;
+  renderDls();
+}
+function renderDls() {
+  document.getElementById('dl-list').innerHTML = dlData.map((d, i) => `
+    <div class="rowline">
+      <input style="width:70px" value="${d.icon}" placeholder="图标" onchange="dlEdit(${i},'icon',this.value)">
+      <input style="width:100px" value="${d.name}" placeholder="平台名" onchange="dlEdit(${i},'name',this.value)">
+      <input style="flex:1" value="${d.desc}" placeholder="说明" onchange="dlEdit(${i},'desc',this.value)">
+      <input style="flex:1.4" value="${d.url}" placeholder="链接" onchange="dlEdit(${i},'url',this.value)">
+      <button class="danger" onclick="dlDel(${i})">移除</button>
+    </div>`).join('') || '<div style="color:#7ea391;font-size:13px">暂无平台</div>';
+}
+function dlEdit(i, k, v) { dlData[i][k] = v; }
+function dlAdd() { dlData.push({ platform: 'new', name: '新平台', desc: '', url: '', icon: '📦' }); renderDls(); }
+async function dlDel(i) { dlData.splice(i, 1); renderDls(); }
+async function dlSave() {
+  const d = await api('/api/admin/downloads', { downloads: dlData });
+  msg(d.ok ? '下载配置已保存（官网实时生效）' : d.error);
+}
+/* ---------- 素材管理 ---------- */
+async function loadUploads() {
+  const d = await api('/api/admin/uploads');
+  if (!d.ok) return;
+  document.getElementById('up-list').innerHTML = d.uploads.map(u => `
+    <div style="text-align:center">
+      <img class="thumb" src="${u.url}">
+      <div style="font-size:10px;color:#9db8a8;max-width:60px;overflow:hidden;text-overflow:ellipsis">${u.file}</div>
+      <button class="danger" style="margin:2px 0" onclick="upDel('${u.file}')">删</button>
+    </div>`).join('') || '<div style="color:#7ea391;font-size:13px">暂无素材</div>';
+}
+async function uploadFile() {
+  const f = document.getElementById('up-file').files[0];
+  if (!f) { msg('请选择图片'); return; }
+  const dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); });
+  const d = await api('/api/upload', { dataUrl, type: 'asset' }, localStorage.getItem('__ddz_token') || undefined);
+  msg(d.ok ? '素材已上传：' + d.url : (d.error || '需要玩家登录令牌'));
+  loadUploads();
+}
+async function upDel(file) {
+  await api('/api/admin/uploads/delete', { file });
+  loadUploads();
+}
+
+function msg(t) { document.getElementById('msg').textContent = t; }
+async function api(path, body) {
+  const res = await fetch(path, {
+    method: body ? 'POST' : 'GET',
+    headers: body ? { 'Content-Type': 'application/json', 'X-Admin': document.getElementById('pwd').value } : { 'X-Admin': document.getElementById('pwd').value },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  return res.json();
+}
+async function loadStats() {
+  const d = await api('/api/stats');
+  if (!d.ok) return;
+  const s = d.stats;
+  document.getElementById('stats-cards').innerHTML = `
+    <div class="stat-card"><b>${s.registered}</b><span>注册玩家（今日 +${s.registeredToday}）</span></div>
+    <div class="stat-card"><b>${s.activeToday}</b><span>今日活跃</span></div>
+    <div class="stat-card"><b>${s.activeWeek}</b><span>7 日活跃</span></div>
+    <div class="stat-card"><b>${s.onlineNow}</b><span>当前在线</span></div>
+    <div class="stat-card"><b>${s.installs}</b><span>客户端安装量（今日 +${s.installsToday}）</span></div>
+    <div class="stat-card"><b>${s.gamesTotal}</b><span>累计对局</span></div>`;
+  const days = s.series.days;
+  const maxV = Math.max(1, ...s.series.registered, ...s.series.active, ...s.series.installs, ...s.series.games);
+  const W = 100 / 7;
+  const bar = (vals, cls) => vals.map((v, i) => {
+    const h = Math.max(2, v / maxV * 90);
+    return `<rect class="${cls}" x="${i * W + W * 0.2}%" y="${100 - h}" width="${W * 0.6}%" height="${h}"><title>${days[i]}: ${v}</title></rect>`;
+  }).join('');
+  document.getElementById('charts').innerHTML = `
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:140px">
+      ${bar(s.series.registered, 'bar')}
+      ${bar(s.series.active, 'bar active')}
+      ${bar(s.series.installs, 'bar inst')}
+      ${bar(s.series.games, 'bar game')}
+    </svg>
+    <div style="display:flex;font-size:11px;color:#9db8a8">
+      ${days.map(d => `<span style="flex:1;text-align:center">${d}</span>`).join('')}
+    </div>
+    <div style="font-size:11px;color:#9db8a8;margin-top:4px">■注册 ■活跃 ■安装 ■对局（同一坐标分层展示，悬停看数值）</div>`;
+}
+async function load() {
+  loadStats(); loadAnns(); loadDls(); loadUploads();
+  const d = await api('/api/admin/accounts');
+  if (!d.ok) { msg(d.error); return; }
+  msg('已加载 ' + d.users.length + ' 个账户');
+  const tb = document.getElementById('rows');
+  tb.innerHTML = d.users.map(u => `<tr>
+    <td>${u.name}</td><td>${u.coins}</td><td>${u.points}</td><td>${u.games}</td><td>${u.wins}</td>
+    <td>${u.lastCheckin || '—'}</td><td>${u.records}</td>
+    <td>${u.banned ? '已封禁' : '正常'}</td>
+    <td class="ops">
+      <button onclick="op('recharge','${u.name}')">充值积分</button>
+      <button onclick="op('points','${u.name}')">调整积分</button>
+      <button onclick="showRecords('${u.name}')">对战记录</button>
+      <button class="danger" onclick="del('${u.name}')">销号</button>
+    </td></tr>`).join('');
+}
+function op(kind, name) {
+  target = kind + ':' + name;
+  document.getElementById('modal-user').textContent = '账户：' + name;
+  document.getElementById('modal-title').textContent = kind === 'recharge' ? '充值积分' : '调整积分（可负）';
+  document.getElementById('modal-amount').value = kind === 'recharge' ? '12000' : '0';
+  document.getElementById('mask').style.display = 'flex';
+}
+async function modalOk() {
+  const [kind, name] = target.split(':');
+  const amount = parseInt(document.getElementById('modal-amount').value || '0', 10);
+  const body = kind === 'recharge' ? { username: name, coins: amount } : { username: name, points: amount };
+  const d = await api('/api/admin/' + kind, body);
+  msg(d.ok ? '操作成功' : d.error);
+  document.getElementById('mask').style.display = 'none';
+  load();
+}
+function closeModal() { document.getElementById('mask').style.display = 'none'; }
+async function del(name) {
+  if (!confirm('确定销号「' + name + '」？该账户全部数据将被删除，不可恢复。')) return;
+  const d = await api('/api/admin/delete', { username: name });
+  msg(d.ok ? '已销号：' + name : d.error);
+  load();
+}
+async function showRecords(name) {
+  const d = await api('/api/admin/records/' + encodeURIComponent(name));
+  if (!d.ok) { msg(d.error); return; }
+  document.getElementById('records-title').textContent = name + ' 的对战记录（' + d.records.length + ' 条）· 积分 ' + d.coins + ' · 积分 ' + d.points;
+  document.getElementById('records-body').innerHTML = d.records.map(r => {
+    const dt = new Date(r.time).toLocaleString();
+    const role = r.landlord === r.you ? '地主' : '农民';
+    const win = (r.landlord === r.you) === (r.winner === r.landlord);
+    return `<div style="padding:6px 0;border-bottom:1px solid #1e5c48">${dt} · ${r.kind === 'room' ? '房间' : '匹配'}局 · ${role} · 底分${r.base}×${r.mult}${r.bombs ? '×炸弹' + r.bombs : ''}${r.spring ? '×春天' : ''} → <b style="color:${r.delta >= 0 ? '#7ed6a2' : '#e08c8c'}">${r.delta >= 0 ? '+' : ''}${r.delta}</b>（${win ? '胜' : '负'}）</div>`;
+  }).join('') || '暂无记录';
+  document.getElementById('records-mask').style.display = 'flex';
+}
+</script>
+</body>
+</html>
