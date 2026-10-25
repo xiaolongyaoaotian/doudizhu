@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 88" role="img" aria-label="灯笼">
+  <defs>
+    <radialGradient id="lt-body" cx="0.5" cy="0.4" r="0.75">
+      <stop offset="0" stop-color="#ff6a5e"/>
+      <stop offset="0.6" stop-color="#d92b26"/>
+      <stop offset="1" stop-color="#8e1218"/>
+    </radialGradient>
+    <linearGradient id="lt-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe2a0"/>
+      <stop offset="1" stop-color="#c3922f"/>
+    </linearGradient>
+  </defs>
+  <line x1="32" y1="0" x2="32" y2="10" stroke="#c3922f" stroke-width="2"/>
+  <rect x="20" y="10" width="24" height="7" rx="3" fill="url(#lt-gold)"/>
+  <ellipse cx="32" cy="44" rx="24" ry="27" fill="url(#lt-body)" stroke="url(#lt-gold)" stroke-width="2"/>
+  <g fill="none" stroke="#ffdf9e" stroke-width="1.4" opacity="0.85">
+    <path d="M14 32 q 18 8 36 0"/>
+    <path d="M12 44 q 20 9 40 0"/>
+    <path d="M14 56 q 18 8 36 0"/>
+    <path d="M32 17 q -12 20 0 54" opacity="0.5"/>
+    <path d="M32 17 q 12 20 0 54" opacity="0.5"/>
+  </g>
+  <text x="32" y="51" text-anchor="middle" font-family="Kaiti SC, STKaiti, KaiTi, serif" font-size="22" font-weight="bold" fill="#ffe2a0">牌</text>
+  <rect x="20" y="68" width="24" height="6" rx="3" fill="url(#lt-gold)"/>
+  <g stroke="#c3922f" stroke-width="2.4" stroke-linecap="round">
+    <line x1="24" y1="74" x2="22" y2="88"/>
+    <line x1="32" y1="74" x2="32" y2="88"/>
+    <line x1="40" y1="74" x2="42" y2="88"/>
+  </g>
+</svg>
