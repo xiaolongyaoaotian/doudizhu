@@ -48,8 +48,13 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .kitty-label{font-size:9px;color:var(--sub);margin-left:3px}
 .round{font-size:11px;color:#ffe9a8;text-align:center}
 .mult{font-size:9px;color:#c8d8c0;text-align:center}
-.my-shown{display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap;min-height:42px;max-width:96%}
-.my-shown .shown-card{margin-top:0}
+/* 下方出牌区：正常竖放卡牌，堆叠排列 */
+.my-shown{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;min-height:56px;max-width:96%}
+.my-shown .shown-card{margin-top:0;width:38px;height:54px;margin-left:-18px;position:relative;flex-direction:column;align-items:flex-start;padding:4px 0 0 5px;border-radius:5px}
+.my-shown .shown-card:first-child{margin-left:0}
+.my-shown .shown-card .sc-rot{position:static;width:auto;height:auto;transform:none;padding:0;display:flex;flex-direction:column;align-items:flex-start}
+.my-shown .sc-rank{font-size:14px;font-weight:800;line-height:1}
+.my-shown .sc-suit{font-size:11px;line-height:1.1;margin-top:1px}
 .placeholder{font-size:10px;color:var(--sub)}
 .actions{display:flex;justify-content:center;align-items:center;gap:8px;padding:2px 8px 1px;flex-wrap:wrap;position:relative}
 .btn{font-size:12px;font-weight:700;color:var(--cream);background:#1f7a5c;border:1px solid #2a8f6d;border-radius:18px;padding:6px 18px;cursor:pointer;transition:transform .1s}
