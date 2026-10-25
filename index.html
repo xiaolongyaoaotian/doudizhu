@@ -81,9 +81,9 @@
   .fcard.king { background: linear-gradient(160deg,#ffe9b0,#f0a93c); color: #7d3742; width: 60px; text-align:center; align-items:center; padding-left: 0; font-size: 13px; }
   @keyframes ffloat { 0%,100% { transform: translateY(0) rotate(var(--rot)); } 50% { transform: translateY(-22px) rotate(var(--rot)); } }
   .hero-inner { position: relative; text-align: center; z-index: 2; padding: 0 20px; }
-  .hero-suit { font-size: clamp(40px, 7vw, 76px); color: var(--gold); letter-spacing: 14px; text-shadow: 0 8px 40px rgba(231,199,102,.4); }
+  .hero-suit { font-size: clamp(28px, 6vw, 76px); color: var(--gold); letter-spacing: clamp(4px, 1vw, 14px); text-shadow: 0 8px 40px rgba(231,199,102,.4); }
   .hero-title {
-    font-size: clamp(38px, 7.5vw, 88px); font-weight: 900; letter-spacing: 12px;
+    font-size: clamp(28px, 6vw, 88px); font-weight: 900; letter-spacing: clamp(4px, 1vw, 12px);
     background: linear-gradient(180deg, #fff3c9 20%, #ffd76e 55%, #f0a93c 90%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
     filter: drop-shadow(0 6px 18px rgba(240,169,60,.45));
@@ -91,8 +91,8 @@
   }
   .hero-sub { color: var(--sub); font-size: clamp(14px, 1.6vw, 18px); margin-bottom: 40px; }
   .dl-big {
-    display: inline-block; padding: 18px 74px; border-radius: 44px;
-    font-size: clamp(18px, 2vw, 24px); font-weight: 900; letter-spacing: 8px;
+    display: inline-block; padding: clamp(14px, 2vw, 18px) clamp(40px, 6vw, 74px); border-radius: 44px;
+    font-size: clamp(16px, 2vw, 24px); font-weight: 900; letter-spacing: clamp(4px, 1vw, 8px);
     color: var(--ink); background: linear-gradient(180deg, #ffe9a8, #ffd76e 55%, #f0a93c);
     border: 3px solid #fff3c9;
     box-shadow: 0 10px 0 #b57e1e, 0 16px 40px rgba(0,0,0,.5), inset 0 2px 0 #fff8;
@@ -335,9 +335,9 @@
   <h2 class="sec" data-i18n="dl_t">下载中心</h2>
   <p class="sec-sub" data-i18n="dl_s">多端数据互通 · 选择你的平台立即开玩</p>
   <div class="dl-grid">
-    <div class="dl"><div class="ico">🤖</div><b>Android</b><span data-i18n="dl_a">APK 安装包 · Android 8.0+</span><a href="/download/android.apk" data-i18n="dl_go">下载安装</a></div>
-    <div class="dl"><div class="ico">🍎</div><b>iOS</b><span data-i18n="dl_i">App Store · iOS 12.0+</span><a href="/download/ios" data-i18n="dl_go2">前往商店</a></div>
-    <div class="dl"><div class="ico">💻</div><b>Windows</b><span data-i18n="dl_w">桌面版 · Win 10/11</span><a href="/download/android.apk" data-i18n="dl_go3">下载安装</a></div>
+    <div class="dl"><div class="ico">🤖</div><b>Android</b><span data-i18n="dl_a">APK 安装包 · Android 8.0+</span><a href="https://github.com/xiaolongyaoaotian/doudizhu/releases" data-i18n="dl_go">下载安装</a></div>
+    <div class="dl"><div class="ico">🍎</div><b>iOS</b><span data-i18n="dl_i">App Store · iOS 12.0+</span><a href="https://github.com/xiaolongyaoaotian/doudizhu/releases" data-i18n="dl_go2">前往商店</a></div>
+    <div class="dl"><div class="ico">💻</div><b>Windows</b><span data-i18n="dl_w">桌面版 · Win 10/11</span><a href="https://github.com/xiaolongyaoaotian/doudizhu/releases" data-i18n="dl_go3">下载安装</a></div>
     <div class="dl"><div class="ico">🌐</div><b data-i18n="dl_web">网页版</b><span data-i18n="dl_ws">无需安装 · 打开即玩</span><a id="dl-web-link" href="/h5/" data-i18n="dl_play">开始游戏</a></div>
   </div>
 </section>
