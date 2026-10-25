@@ -69,6 +69,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .hc-rank{font-size:14px;font-weight:800;line-height:1}
 .hc-suit{font-size:11px;line-height:1.1;margin-top:1px}
 .hc-suit.joker{font-size:6px;font-weight:700;letter-spacing:.5px}
+@keyframes robotFloat{0%{opacity:0;transform:translateX(-50%) translateY(8px) scale(.6)}20%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.1)}80%{opacity:1;transform:translateX(-50%) translateY(-4px) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-15px) scale(.8)}}
 .me-head{position:fixed;left:72px;bottom:3px;display:flex;align-items:center;gap:6px;background:rgba(10,47,36,.85);border:1px solid #2a8f6d;border-radius:10px;padding:5px 10px;z-index:30;cursor:pointer}
 .me-head .avatar{width:28px;height:28px;font-size:12px}
 .me-col{display:flex;flex-direction:column;gap:1px}
@@ -90,6 +91,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       <div class="topbar-r">
         <span class="coin-pill">◈ {{ profile.coins }}</span>
         <button class="mini-btn" :class="{gold:profile.open}" @click="toggleOpen">明牌</button>
+        <button class="mini-btn" :class="{gold:isTrust}" style="position:relative" @click="toggleTrust">{{ isTrust ? '托管中' : '托管' }}<span v-if="robotShow" style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:20px;animation:robotFloat 2s ease-out forwards">🤖</span></button>
         <button class="mini-btn" @click="startGame">重开</button>
       </div>
     </div>
@@ -192,14 +194,14 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
           <button class="btn primary" @click="startGame">开始游戏</button>
         </template>
         <template v-else-if="snap.phase === 'bid'">
-          <template v-if="snap.current === 0">
+          <template v-if="snap.current === 0 && !isTrust">
             <button v-for="v in bidOptions" :key="v" class="btn" @click="doBid(v)">{{ v }} 分</button>
             <button class="btn primary" @click="doBid(0)">不抢</button>
           </template>
           <button v-else class="btn disabled" disabled>好友叫分中…</button>
         </template>
         <template v-else-if="snap.phase === 'double'">
-          <template v-if="snap.current === 0">
+          <template v-if="snap.current === 0 && !isTrust">
             <button class="btn" @click="doDouble(1)">不加倍</button>
             <button class="btn" @click="doDouble(2)">×2</button>
             <button v-if="snap.landlord === 0" class="btn primary" @click="doDouble(4)">×4</button>
@@ -207,7 +209,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
           <button v-else class="btn disabled" disabled>好友加倍中…</button>
         </template>
         <template v-else-if="snap.phase === 'play'">
-          <template v-if="snap.current === 0">
+          <template v-if="snap.current === 0 && !isTrust">
             <button v-if="canPass" class="btn" @click="doPass">不出</button>
             <button class="btn" @click="doHint">提示</button>
             <button class="btn primary" :disabled="!selected.length" @click="doPlay">出牌</button>
@@ -278,6 +280,8 @@ const app = createApp({
     const profileOpen = ref(false);
     const hintMsg = ref('');
     const dealing = ref(false);
+    const isTrust = ref(false);
+    const robotShow = ref(false);
 
     const myHand = computed(() => snap.value ? snap.value.hands[0] : []);
     const bidOptions = computed(() => snap.value ? [1,2,3].filter(v => v > snap.value.maxBid) : []);
@@ -296,7 +300,13 @@ const app = createApp({
     function initGame() {
       gameRef.value = new DDZGame({
         onChange: s => snap.value = s,
-        onEvent: e => { if (e.type === 'finish') finishInfo.value = e; },
+        onEvent: e => {
+          if (e.type === 'finish') {
+            finishInfo.value = e;
+            isTrust.value = false;
+            gameRef.value.setTrust(false);
+          }
+        },
         persistStats: inc => {
           profile.value.games += inc.games;
           profile.value.wins += inc.win;
@@ -309,6 +319,7 @@ const app = createApp({
     }
 
     function toggleCard(c) {
+      if (isTrust.value) return;
       if (!snap.value || snap.value.phase !== 'play' || snap.value.current !== 0) return;
       const i = selected.value.indexOf(c.id);
       if (i >= 0) selected.value.splice(i, 1); else selected.value.push(c.id);
@@ -327,11 +338,21 @@ const app = createApp({
       else hintMsg.value = canPass.value ? '没有能压过的牌，可「不出」' : '轮到你领出';
     }
     function toggleOpen() { profile.value.open = !profile.value.open; save(); }
+    function toggleTrust() {
+      isTrust.value = !isTrust.value;
+      if (isTrust.value) {
+        robotShow.value = true;
+        setTimeout(() => robotShow.value = false, 2000);
+        gameRef.value.setTrust(true);
+      } else {
+        gameRef.value.setTrust(false);
+      }
+    }
 
     onMounted(() => initGame());
 
     return {
-      profile, snap, selected, finishInfo, profileOpen, hintMsg, dealing,
+      profile, snap, selected, finishInfo, profileOpen, hintMsg, dealing, isTrust, robotShow,
       myHand, bidOptions, canPass, winRate,
       startGame, toggleCard, doBid, doDouble, doPass, doPlay, doHint, toggleOpen,
       cardLabel,
