@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>牌友斗地主 · 网页版</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --gold: #ffd76e; --gold-deep: #f0a93c; --ink: #2c1a08;
+  --felt: #0d3b2e; --felt-2: #14614a; --panel: #10352a; --line: #1e5c48;
+  --cream: #f7f1de; --sub: #9db8a8;
+}
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--felt); color: var(--cream);
+  min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
+}
+/* 顶栏 */
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 12px; background: rgba(16, 53, 42, 0.9);
+  border-bottom: 1px solid var(--line); flex-shrink: 0;
+}
+.topbar-l .title { font-size: 16px; font-weight: 800; color: var(--gold); }
+.topbar-l .sub { font-size: 10px; color: var(--sub); margin-left: 6px; }
+.topbar-r { display: flex; align-items: center; gap: 6px; }
+.mini-btn {
+  font-size: 11px; color: var(--cream); background: #1f7a5c;
+  border: 1px solid #2a8f6d; border-radius: 14px; padding: 4px 10px; cursor: pointer;
+}
+.mini-btn.gold { background: var(--gold); color: var(--ink); font-weight: 700; border-color: #d9b76e; }
+.coin-pill {
+  font-size: 11px; color: #ffe9a8; background: rgba(10,47,36,0.7);
+  border: 1px solid #e7c76666; border-radius: 14px; padding: 4px 10px; font-weight: 700;
+}
+/* 牌桌 */
+.table {
+  position: relative; flex: 1; margin: 4px 6px; border-radius: 14px; padding: 10px;
+  background: radial-gradient(ellipse at 50% 30%, var(--felt-2), #0a382b 100%);
+  border: 2px solid var(--line); overflow: hidden; display: flex; flex-direction: column;
+}
+/* 对手 */
+.opp { position: absolute; top: 8px; display: flex; flex-direction: column; gap: 4px; width: 130px; }
+.opp-a { left: 6px; align-items: flex-start; }
+.opp-b { right: 6px; align-items: flex-end; }
+.opp-info { display: flex; align-items: center; gap: 4px; }
+.opp-name { font-size: 11px; color: #f0ead5; font-weight: 600; }
+.opp-count { font-size: 10px; color: var(--sub); }
+.level-tag { font-size: 9px; color: #fff; border-radius: 6px; padding: 1px 5px; font-weight: 700; }
+.level-tag.low { background: #b07d3a; }
+.level-tag.mid { background: #6d7f8f; }
+.level-tag.high { background: #c9a13b; color: var(--ink); }
+.role-tag { font-size: 9px; color: var(--ink); background: var(--gold); border-radius: 5px; padding: 1px 5px; font-weight: 700; }
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 14px; font-weight: 700; border: 1px solid var(--gold);
+  color: #fff; cursor: pointer; flex-shrink: 0;
+}
+.avatar.rose { background: #a04a56; }
+/* 牌堆（横放竖排） */
+.opp-cards { display: flex; flex-direction: column; align-items: flex-start; }
+.opp-cards.right { align-items: flex-end; }
+.card-back {
+  width: 56px; height: 38px; border-radius: 5px; margin-top: -26px;
+  background: repeating-linear-gradient(45deg, #1f7a5c 0 7px, #175d46 7px 14px);
+  border: 1px solid rgba(231,199,102,0.4); box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.card-back:first-child { margin-top: 0; }
+/* 出牌区 */
+.play-zone {
+  position: absolute; display: flex; flex-direction: column; align-items: flex-start;
+  width: 70px; max-height: 180px; overflow: hidden;
+}
+.play-l { left: 68px; top: 60px; }
+.play-r { right: 68px; top: 60px; align-items: flex-end; }
+.shown-card {
+  position: relative; width: 58px; height: 40px; border-radius: 5px; margin-top: -26px;
+  background: #fffef8; border: 1px solid #d8d5c6; color: #23252b;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25); overflow: hidden;
+}
+.shown-card:first-child { margin-top: 0; }
+.shown-card.red { color: #b3372e; }
+.sc-rot {
+  position: absolute; left: 50%; top: 50%; width: 40px; height: 58px;
+  display: flex; flex-direction: column; align-items: flex-start; padding: 4px 0 0 4px;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.sc-rank { font-size: 13px; font-weight: 800; line-height: 1; }
+.sc-suit { font-size: 10px; line-height: 1; margin-top: 1px; }
+.pass-pill { font-size: 10px; color: #bfe3d0; border: 1px solid #2a8f6d; border-radius: 12px; padding: 2px 10px; background: rgba(15,77,58,0.5); }
+/* 中央 */
+.center {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  gap: 4px; padding: 4px 0 2px; min-height: 0;
+}
+.counter {
+  display: flex; align-items: center; gap: 2px; background: rgba(10,47,36,0.72);
+  border: 1px solid #2a8f6d88; border-radius: 8px; padding: 3px 7px;
+}
+.counter-title { font-size: 9px; color: var(--gold); font-weight: 700; margin-right: 3px; }
+.counter-cell { display: flex; flex-direction: column; align-items: center; min-width: 17px; }
+.counter-cell.zero { opacity: 0.3; }
+.cc-label { font-size: 8px; color: #c8d8c0; line-height: 1.2; }
+.cc-num { font-size: 9px; color: #ffe9a8; font-weight: 700; line-height: 1.2; }
+.kitty { display: flex; align-items: center; gap: 3px; }
+.kitty-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 24px; height: 33px; border-radius: 4px; background: #fffef8;
+  border: 1px solid #d8d5c6; color: #23252b; font-size: 10px; font-weight: 800;
+}
+.kitty-card.red { color: #b3372e; }
+.kitty-label { font-size: 9px; color: var(--sub); margin-left: 3px; }
+.round { font-size: 11px; color: #ffe9a8; text-align: center; }
+.mult { font-size: 9px; color: #c8d8c0; text-align: center; }
+/* 我的出牌区 */
+.my-shown {
+  display: flex; align-items: center; justify-content: center; gap: 3px; flex-wrap: wrap;
+  min-height: 42px; max-width: 96%;
+}
+.my-shown .shown-card { margin-top: 0; }
+.placeholder { font-size: 10px; color: var(--sub); }
+/* 按钮 */
+.actions { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 2px 8px 1px; flex-wrap: wrap; position: relative; }
+.btn {
+  font-size: 12px; font-weight: 700; color: var(--cream); background: #1f7a5c;
+  border: 1px solid #2a8f6d; border-radius: 18px; padding: 6px 18px; cursor: pointer;
+  transition: transform 0.1s;
+}
+.btn:active { transform: scale(0.95); }
+.btn.primary { background: var(--gold); color: var(--ink); border-color: #d9b76e; }
+.btn.disabled { opacity: 0.5; pointer-events: none; }
+/* 手牌 */
+.hand {
+  display: flex; align-items: flex-end; justify-content: center; flex-wrap: wrap;
+  min-height: 60px; padding-bottom: 2px; row-gap: 6px;
+}
+.hand-card {
+  display: flex; flex-direction: column; align-items: flex-start;
+  width: 38px; height: 54px; margin-left: -22px; padding: 4px 0 0 5px;
+  border-radius: 5px; background: #fffef8; border: 1px solid #d8d5c6; color: #23252b;
+  position: relative; transition: transform 0.08s; cursor: pointer;
+}
+.hand-card:first-child { margin-left: 0; }
+.hand-card.red { color: #b3372e; }
+.hand-card.sel { transform: translateY(-12px); border-color: var(--gold); box-shadow: 0 0 6px rgba(231,199,102,0.6); }
+.hc-rank { font-size: 14px; font-weight: 800; line-height: 1; }
+.hc-suit { font-size: 11px; line-height: 1.1; margin-top: 1px; }
+.hc-suit.joker { font-size: 6px; font-weight: 700; letter-spacing: 0.5px; }
+/* 头像框 */
+.me-head {
+  position: fixed; left: 72px; bottom: 3px;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(10,47,36,0.85); border: 1px solid #2a8f6d; border-radius: 10px;
+  padding: 5px 10px; z-index: 30;
+}
+.me-head .avatar { width: 28px; height: 28px; font-size: 12px; }
+.me-col { display: flex; flex-direction: column; gap: 1px; }
+.me-col .opp-count { font-size: 10px; }
+/* 弹窗 */
+.mask { position: fixed; inset: 0; background: rgba(4,18,13,0.78); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.panel {
+  width: 280px; max-width: 92%; background: linear-gradient(180deg,#14493a,#0d3529);
+  border: 1px solid #e7c76666; border-radius: 16px; padding: 18px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.panel h3 { font-size: 18px; font-weight: 800; color: var(--gold); text-align: center; }
+.panel .row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.panel .row b { color: #ffe9a8; }
+.panel .row .neg { color: #e08c8c; }
+.panel .btn { width: 100%; text-align: center; }
+.tabs { display: flex; gap: 6px; }
+.tab { flex: 1; font-size: 13px; color: var(--sub); background: var(--felt); border-radius: 8px; padding: 8px; font-weight: 700; cursor: pointer; }
+.tab.on { background: var(--gold); color: var(--ink); }
+.input {
+  background: var(--felt); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 12px; color: var(--cream); font-size: 13px; width: 100%;
+}
+.err { font-size: 11px; color: #f3b8b8; }
+.note { font-size: 10px; color: #7ea391; text-align: center; }
+</style>
+</head>
+<body>
+<div id="app" style="min-height:100vh;display:flex;flex-direction:column;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
+<script type="module">
+const { createApp, ref, computed, onMounted } = Vue;
+const engine = await import('./common/ddz-engine.js');
+const { DDZGame, label: cardLabel, getCombo, bestLead, findResponse } = engine;
+
+const STORE = 'ddz-web-v1';
+const DEFAULT = { name: '你', games: 0, wins: 0, points: 0, coins: 12000, open: false, style: 'bamboo' };
+const load = () => { try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(STORE) || '{}') }; } catch { return { ...DEFAULT }; } };
+const save = d => localStorage.setItem(STORE, JSON.stringify(d));
+
+const app = createApp({
+  setup() {
+    const profile = ref(load());
+    const game = ref(null);
+    const snap = ref(null);
+    const selected = ref([]);
+    const finishInfo = ref(null);
+    const showLogin = ref(false);
+    const loginMode = ref('guest');
+    const errMsg = ref('');
+    const hintMsg = ref('');
+    const profileOpen = ref(false);
+    const seatInfoOpen = ref(null);
+    const dealing = ref(false);
+
+    const myHand = computed(() => snap.value ? snap.value.hands[0] : []);
+    const bidOptions = computed(() => snap.value ? [1,2,3].filter(v => v > snap.value.maxBid) : []);
+    const canPass = computed(() => !!(snap.value && snap.value.last && snap.value.last.player !== 0));
+    const winRate = computed(() => profile.value.games ? Math.round(profile.value.wins * 100 / profile.value.games) : 0);
+
+    function startGame() {
+      selected.value = []; finishInfo.value = null; hintMsg.value = '';
+      dealing.value = true;
+      setTimeout(() => dealing.value = false, 800);
+      game.value.startGame();
+    }
+
+    function handleEvent(e) {
+      if (e.type === 'finish') {
+        finishInfo.value = e;
+      }
+    }
+
+    function initGame() {
+      game.value = new DDZGame({
+        onChange: s => snap.value = s,
+        onEvent: handleEvent,
+        persistStats: inc => {
+          profile.value.games += inc.games;
+          profile.value.wins += inc.win;
+          profile.value.points += inc.points;
+          profile.value.coins += inc.points;
+          save(profile.value);
+        },
+      });
+      snap.value = game.value.snapshot();
+    }
+
+    function toggleCard(c) {
+      if (!snap.value || snap.value.phase !== 'play' || snap.value.current !== 0) return;
+      const i = selected.value.indexOf(c.id);
+      if (i >= 0) selected.value.splice(i, 1); else selected.value.push(c.id);
+    }
+
+    function doBid(v) { game.value.humanBid(v); }
+    function doDouble(m) { game.value.humanDouble(m); }
+    function doPass() { selected.value = []; game.value.humanPass(); }
+    function doPlay() {
+      if (!selected.value.length) return;
+      const picked = myHand.value.filter(c => selected.value.includes(c.id));
+      game.value.humanPlay(picked); selected.value = []; hintMsg.value = '';
+    }
+    function doHint() {
+      const h = game.value.hint();
+      if (h && h.length) { selected.value = h.map(c => c.id); hintMsg.value = '已选牌，点「出牌」'; }
+      else hintMsg.value = canPass.value ? '没有能压过的牌，可「不出」' : '轮到你领出';
+    }
+
+    function toggleOpen() {
+      profile.value.open = !profile.value.open;
+      save(profile.value);
+    }
+
+    onMounted(() => { initGame(); });
+
+    return {
+      profile, snap, selected, finishInfo, showLogin, loginMode, errMsg, hintMsg,
+      profileOpen, seatInfoOpen, dealing, myHand, bidOptions, canPass, winRate,
+      startGame, toggleCard, doBid, doDouble, doPass, doPlay, doHint, toggleOpen,
+      cardLabel, seat: p => snap.value ? snap.value.seatMeta[p] : null,
+      isRed: c => c.suit === '♥' || c.suit === '♦',
+      showRole: p => !!(snap.value && snap.value.started && snap.value.phase !== 'bid' && snap.value.landlord === p),
+      revealOpp: p => !!(profile.value.open && snap.value && snap.value.started),
+    };
+  }
+});
+
+app.config.compilerOptions.delimiters = ['{', '}'];
+app.mount('#app');
+</script>
+
+<!-- Vue 模板（用 JS 渲染，非 SFC） -->
+<script>
+// 游戏渲染由 Vue CDN 处理，这里手动创建完整模板
+const tpl = `
+<div style="min-height:100vh;display:flex;flex-direction:column;">
+  <div class="topbar">
+    <div class="topbar-l"><span class="title">牌友斗地主</span><span class="sub">网页版</span></div>
+    <div class="topbar-r">
+      <span class="coin-pill">◈ {profile.coins}</span>
+      <button class="mini-btn" :class="{gold:profile.open}" @click="toggleOpen">{profile.open?'明牌':'明牌'}</button>
+      <button class="mini-btn" @click="startGame">重开</button>
+    </div>
+  </div>
+
+  <div class="table">
+    <!-- 左家 -->
+    <div class="opp opp-a">
+      <div class="opp-info">
+        <div class="avatar">{seat(1)?seat(1).avatar:'竹'}</div>
+        <span class="opp-name">{seat(1)?seat(1).name:'竹影客'}</span>
+        <span v-if="seat(1)" class="level-tag" :class="seat(1).level">{seat(1).level==='low'?'初':seat(1).level==='high'?'高':'中'}</span>
+        <span v-if="showRole(1)" class="role-tag">地主</span>
+        <span class="opp-count">{snap?snap.handCounts[1]:17}张</span>
+      </div>
+      <div class="opp-cards">
+        <template v-if="revealOpp(1)">
+          <div v-for="c in snap.hands[1]" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
+            <div class="sc-rot"><span class="sc-rank">{cardLabel(c)}</span><span class="sc-suit" v-if="!c.joker">{c.suit}</span></div>
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="i in (snap?snap.handCounts[1]:17)" :key="i" class="card-back"></div>
+        </template>
+      </div>
+    </div>
+
+    <!-- 右家 -->
+    <div class="opp opp-b">
+      <div class="opp-info">
+        <div class="avatar rose">{seat(2)?seat(2).avatar:'梅'}</div>
+        <span class="opp-name">{seat(2)?seat(2).name:'梅子青'}</span>
+        <span v-if="seat(2)" class="level-tag" :class="seat(2).level">{seat(2).level==='low'?'初':seat(2).level==='high'?'高':'中'}</span>
+        <span v-if="showRole(2)" class="role-tag">地主</span>
+        <span class="opp-count">{snap?snap.handCounts[2]:17}张</span>
+      </div>
+      <div class="opp-cards right">
+        <template v-if="revealOpp(2)">
+          <div v-for="c in snap.hands[2]" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
+            <div class="sc-rot"><span class="sc-rank">{cardLabel(c)}</span><span class="sc-suit" v-if="!c.joker">{c.suit}</span></div>
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="i in (snap?snap.handCounts[2]:17)" :key="i" class="card-back"></div>
+        </template>
+      </div>
+    </div>
+
+    <!-- 出牌区 -->
+    <div class="play-zone play-l">
+      <template v-if="snap&&snap.shown&&snap.shown[1]">
+        <template v-if="!snap.shown[1].pass">
+          <div v-for="c in snap.shown[1].cards" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
+            <div class="sc-rot"><span class="sc-rank">{cardLabel(c)}</span><span class="sc-suit" v-if="!c.joker">{c.suit}</span></div>
+          </div>
+        </template>
+        <span v-else class="pass-pill">不出</span>
+      </template>
+    </div>
+    <div class="play-zone play-r">
+      <template v-if="snap&&snap.shown&&snap.shown[2]">
+        <template v-if="!snap.shown[2].pass">
+          <div v-for="c in snap.shown[2].cards" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
+            <div class="sc-rot"><span class="sc-rank">{cardLabel(c)}</span><span class="sc-suit" v-if="!c.joker">{c.suit}</span></div>
+          </div>
+        </template>
+        <span v-else class="pass-pill">不出</span>
+      </template>
+    </div>
+
+    <!-- 中央 -->
+    <div class="center">
+      <div class="kitty">
+        <template v-if="snap&&snap.started&&snap.phase!=='bid'">
+          <div v-for="c in snap.kitty" :key="c.id" class="kitty-card" :class="{red:isRed(c)}">
+            <span>{cardLabel(c)}</span><span v-if="!c.joker" style="font-size:8px">{c.suit}</span>
+          </div>
+        </template>
+        <template v-else>
+          <div v-for="i in 3" :key="i" class="kitty-card" style="background:repeating-linear-gradient(45deg,#1f7a5c 0 4px,#175d46 4px 8px)"></div>
+        </template>
+        <span class="kitty-label">底牌</span>
+      </div>
+      <span class="round">{snap?snap.roundText:'准备好了吗？'}</span>
+      <span v-if="snap&&snap.started&&snap.phase!=='bid'" class="mult">底分 {snap.base} · ×{snap.points/snap.base}</span>
+    </div>
+
+    <!-- 我的出牌区 -->
+    <div class="my-shown">
+      <template v-if="snap&&snap.shown&&snap.shown[0]">
+        <template v-if="!snap.shown[0].pass">
+          <div v-for="c in snap.shown[0].cards" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
+            <div class="sc-rot"><span class="sc-rank">{cardLabel(c)}</span><span class="sc-suit" v-if="!c.joker">{c.suit}</span></div>
+          </div>
+        </template>
+        <span v-else class="pass-pill">你不出</span>
+      </template>
+      <span v-else-if="snap&&snap.started" class="placeholder">等待出牌</span>
+      <span v-else class="placeholder">点「开始游戏」发牌</span>
+    </div>
+
+    <!-- 按钮 -->
+    <div class="actions">
+      <span v-if="hintMsg" style="position:absolute;top:-16px;font-size:10px;color:#ffe9a8;">{hintMsg}</span>
+      <template v-if="dealing"><button class="btn disabled" disabled>发牌中…</button></template>
+      <template v-else-if="!snap||snap.phase==='idle'||snap.phase==='over'">
+        <button class="btn primary" @click="startGame">开始游戏</button>
+      </template>
+      <template v-else-if="snap.phase==='bid'">
+        <template v-if="snap.current===0">
+          <button v-for="v in bidOptions" :key="v" class="btn" @click="doBid(v)">{v} 分</button>
+          <button class="btn primary" @click="doBid(0)">不抢</button>
+        </template>
+        <button v-else class="btn disabled" disabled>好友叫分中…</button>
+      </template>
+      <template v-else-if="snap.phase==='double'">
+        <template v-if="snap.current===0">
+          <button class="btn" @click="doDouble(1)">不加倍</button>
+          <button class="btn" @click="doDouble(2)">×2</button>
+          <button v-if="snap.landlord===0" class="btn primary" @click="doDouble(4)">×4</button>
+        </template>
+        <button v-else class="btn disabled" disabled>好友加倍中…</button>
+      </template>
+      <template v-else-if="snap.phase==='play'">
+        <template v-if="snap.current===0">
+          <button v-if="canPass" class="btn" @click="doPass">不出</button>
+          <button class="btn" @click="doHint">提示</button>
+          <button class="btn primary" :disabled="!selected.length" @click="doPlay">出牌</button>
+        </template>
+        <button v-else class="btn disabled" disabled>好友出牌中…</button>
+      </template>
+    </div>
+
+    <!-- 手牌 -->
+    <div class="hand">
+      <div v-for="c in myHand" :key="c.id" class="hand-card"
+        :class="[{red:isRed(c)}, selected.includes(c.id)?'sel':'']" @click="toggleCard(c)">
+        <span class="hc-rank">{cardLabel(c)}</span>
+        <span class="hc-suit" v-if="!c.joker">{c.suit}</span>
+        <span class="hc-suit joker" v-else>JOKER</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 我的头像 -->
+  <div class="me-head" @click="profileOpen=true">
+    <div class="avatar">你</div>
+    <div class="me-col">
+      <span v-if="showRole(0)" class="role-tag">地主</span>
+      <span class="opp-count">{snap?snap.handCounts[0]:0}张</span>
+    </div>
+  </div>
+
+  <!-- 结算面板 -->
+  <div v-if="finishInfo" class="mask" @click="finishInfo=null">
+    <div class="panel" @click.stop>
+      <h3>{finishInfo.title}</h3>
+      <div class="row"><span>你的积分</span><b :class="{neg:finishInfo.delta[0]<0}">{finishInfo.delta[0]>=0?'+':''}{finishInfo.delta[0]}</b></div>
+      <div class="row"><span>当前积分</span><b>{profile.points}</b></div>
+      <div class="row"><span>当前余额</span><b>◈ {profile.coins}</b></div>
+      <button class="btn primary" @click="finishInfo=null;startGame()">再来一局</button>
+    </div>
+  </div>
+
+  <!-- 个人简介 -->
+  <div v-if="profileOpen" class="mask" @click="profileOpen=false">
+    <div class="panel" @click.stop>
+      <h3>个人简介</h3>
+      <div class="row"><span>昵称</span><b>{profile.name}</b></div>
+      <div class="row"><span>对局数</span><b>{profile.games}</b></div>
+      <div class="row"><span>胜率</span><b>{winRate}%</b></div>
+      <div class="row"><span>积分</span><b>{profile.points}</b></div>
+      <div class="row"><span>余额</span><b>◈ {profile.coins}</b></div>
+      <button class="btn" @click="profileOpen=false">关闭</button>
+    </div>
+  </div>
+</div>
+`;
+document.getElementById('app').innerHTML = tpl;
+</script>
+</body>
+</html>
