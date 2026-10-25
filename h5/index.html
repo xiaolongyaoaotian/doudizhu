@@ -91,7 +91,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       <div class="topbar-r">
         <span class="coin-pill">◈ {{ profile.coins }}</span>
         <button class="mini-btn" :class="{gold:profile.open}" @click="toggleOpen">明牌</button>
-        <button class="mini-btn" :class="{gold:isTrust}" style="position:relative" @click="toggleTrust">{{ isTrust ? '托管中' : '托管' }}<span v-if="robotShow" style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:20px;animation:robotFloat 2s ease-out forwards">🤖</span></button>
+        <button class="mini-btn" :class="{gold:isTrust}" @click="toggleTrust">{{ isTrust ? '托管中' : '托管' }}</button>
         <button class="mini-btn" @click="startGame">重开</button>
       </div>
     </div>
