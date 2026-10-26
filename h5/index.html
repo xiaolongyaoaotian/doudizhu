@@ -105,11 +105,18 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .room-chip.on{background:var(--gold);color:var(--ink);border-color:#d9b76e}
 .room-chip.on small{color:#6b5410}
 .room-chip.locked{opacity:.45}
+.game-view{min-height:100vh;display:flex;flex-direction:column}
+.lobby-page{min-height:100vh;display:flex;flex-direction:column;background:#0d3b2e}
+.lobby-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.lobby-body{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
+.lobby-card2{width:320px;max-width:94%;background:linear-gradient(180deg,#14493a,#0d3529);border:1px solid #e7c76666;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.mode-btn.resume{background:rgba(231,199,102,.16);border-color:#d9b76e;color:#ffe9a8}
 </style>
 </head>
 <body>
 <div id="app" v-cloak>
   <div style="min-height:100vh;display:flex;flex-direction:column">
+    <div v-if="screen === 'game'" class="game-view">
     <div class="topbar">
       <div class="topbar-l"><span class="title">牌友斗地主</span><span class="sub">网页版</span></div>
       <div class="topbar-r">
@@ -261,8 +268,9 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <span class="opp-count">{{ snap ? snap.handCounts[0] : 0 }}张</span>
       </div>
     </div>
+    </div>
 
-    <div v-if="finishInfo" class="mask" @click="finishInfo = null">
+    <div v-if="finishInfo && screen === 'game'" class="mask" @click="finishInfo = null">
       <div class="panel" @click.stop>
         <h3>{{ finishInfo.title }}</h3>
         <div class="row"><span>你的积分</span><b :class="{neg: finishInfo.delta[0] < 0}">{{ finishInfo.delta[0] >= 0 ? '+' : '' }}{{ finishInfo.delta[0] }}</b></div>
@@ -285,23 +293,29 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       </div>
     </div>
 
-    <div v-if="!needAuth && screen === 'lobby'" class="mask" style="z-index:150;background:rgba(4,18,13,.97)">
-      <div class="panel" style="width:320px" @click.stop>
-        <h3>牌友斗地主</h3>
-        <div class="lobby-me">
-          <div class="avatar">{{ profile.name.slice(0, 1) }}</div>
-          <div class="lm-info"><b>{{ profile.name }}</b><span>◈ {{ profile.coins }}</span></div>
-          <div class="lm-stats"><span>对局 {{ profile.games }}</span><span>胜率 {{ winRate }}%</span></div>
+    <div v-if="!needAuth && screen === 'lobby'" class="lobby-page">
+      <div class="lobby-head">
+        <div class="topbar-l"><span class="title">牌友斗地主</span><span class="sub">网页版</span></div>
+        <span class="coin-pill">◈ {{ profile.coins }}</span>
+      </div>
+      <div class="lobby-body">
+        <div class="lobby-card2">
+          <div class="lobby-me" @click="profileOpen = true">
+            <div class="avatar">{{ profile.name.slice(0, 1) }}</div>
+            <div class="lm-info"><b>{{ profile.name }}</b><span>◈ {{ profile.coins }}</span></div>
+            <div class="lm-stats"><span>对局 {{ profile.games }}</span><span>胜率 {{ winRate }}%</span></div>
+          </div>
+          <button v-if="canResume" class="mode-btn resume" @click="resumeGame">▶ 回到对局<small>牌局进行中，点击继续</small></button>
+          <button class="mode-btn" @click="modeSolo">🃏 单机模式<small>与 AI 对战 · 四档场次</small></button>
+          <div v-if="roomOpen" class="lobby-rooms">
+            <button v-for="r in ROOMS" :key="r.id" class="room-chip" :class="{ on: roomId === r.id, locked: roomLocked(r) }" @click="pickRoom(r)">
+              <b>{{ r.name }}</b><small>{{ r.base }}底</small><small v-if="roomLocked(r)">🔒</small>
+            </button>
+            <button class="btn primary" style="width:100%" @click="enterGame">开始新对局</button>
+          </div>
+          <button class="mode-btn" @click="goMulti">👥 多人模式<small>联机匹配 · 好友对战</small></button>
+          <button class="btn" style="width:100%" @click="doLogout">退出登录</button>
         </div>
-        <button class="mode-btn" @click="modeSolo">🃏 单机模式<small>与 AI 对战 · 四档场次</small></button>
-        <div v-if="roomOpen" class="lobby-rooms">
-          <button v-for="r in ROOMS" :key="r.id" class="room-chip" :class="{ on: roomId === r.id, locked: roomLocked(r) }" @click="pickRoom(r)">
-            <b>{{ r.name }}</b><small>{{ r.base }}底</small><small v-if="roomLocked(r)">🔒</small>
-          </button>
-          <button class="btn primary" style="width:100%" @click="enterGame">开始对局</button>
-        </div>
-        <button class="mode-btn" @click="goMulti">👥 多人模式<small>联机匹配 · 好友对战</small></button>
-        <button class="btn" style="width:100%" @click="doLogout">退出登录</button>
       </div>
     </div>
 
@@ -408,16 +422,16 @@ const app = createApp({
         if (onlineGameId.value) net.gameQuit(onlineGameId.value);
         onlineMode.value = false; onlineGameId.value = '';
         history.replaceState(null, '', location.pathname);
-      } else if (gameRef.value) {
-        gameRef.value.destroy();
-        gameRef.value = null;
       }
-      finishInfo.value = null; isTrust.value = false; selected.value = []; hintMsg.value = '';
+      // 单机对局保留实例，主界面可"回到对局"继续
+      selected.value = []; hintMsg.value = '';
       screen.value = 'lobby';
       needAuth.value = !account.currentUser();
       const p = account.getProfile();
       if (p) profile.value = p;
     }
+    const canResume = computed(() => !onlineMode.value && !!gameRef.value && !!snap.value && snap.value.started && snap.value.phase !== 'over');
+    function resumeGame() { screen.value = 'game'; }
 
     // ---------- 联机模式（服务器权威，REST 轮询） ----------
     let onlineTimer = null;
@@ -581,7 +595,7 @@ const app = createApp({
       screen, onlineMode, ROOMS, roomId, roomOpen,
       myHand, bidOptions, canPass, winRate,
       startGame, toggleCard, doBid, doDouble, doPass, doPlay, doHint, toggleOpen, toggleTrust,
-      submitAuth, guestAuth, doLogout, modeSolo, goMulti, pickRoom, enterGame, leaveGame, roomLocked,
+      submitAuth, guestAuth, doLogout, modeSolo, goMulti, pickRoom, enterGame, leaveGame, roomLocked, canResume, resumeGame,
       cardLabel,
       seat: p => snap.value ? snap.value.seatMeta[p] : null,
       isRed: c => c.suit === '♥' || c.suit === '♦',
