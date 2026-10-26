@@ -361,6 +361,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <div class="row"><span>当前积分</span><b>{{ profile.points }}</b></div>
         <div class="row"><span>当前余额</span><b>◈ {{ profile.coins }}</b></div>
         <button class="btn primary" @click="finishInfo = null; startGame()">再来一局</button>
+        <button class="btn" @click="finishInfo = null; leaveGame()">离开房间</button>
       </div>
     </div>
 
@@ -380,7 +381,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     <div v-if="!needAuth && screen === 'lobby'" class="lobby-page">
       <div class="lobby-head">
         <div class="topbar-l"><span class="title">牌友斗地主</span><span class="sub">网页版</span></div>
-        <button class="mini-btn" @click="screen = 'settings'">⚙ 设置</button>
       </div>
       <div class="lobby-scroll">
         <div class="lobby-banner" @click="profileOpen = true">

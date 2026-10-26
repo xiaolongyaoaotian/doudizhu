@@ -18,8 +18,7 @@
         </view>
         <button class="mini-btn wide-only" @click="toggleViewMode">{{ viewMode === 'win' ? '窗口' : '全屏' }}</button>
         <button class="mini-btn wide-only" @click="toggleFullscreen">{{ isFullscreen ? '⤢' : '⛶' }}</button>
-        <button class="mini-btn" @click="confirmRestart">重开</button>
-        <button class="mini-btn" @click="goSettings">设置</button>
+        <button class="mini-btn" @click="leaveRoom">离开</button>
       </view>
     </view>
 
@@ -287,6 +286,7 @@
         <view class="settle-actions">
           <button class="btn" @click="finishInfo = null">看牌桌</button>
           <button class="btn primary" @click="startSettleNext">再来一局</button>
+          <button class="btn" @click="leaveRoom">离开房间</button>
         </view>
       </view>
     </view>
@@ -578,15 +578,13 @@ export default {
     backToOnline() {
       uni.redirectTo({ url: '/pages/online/online' });
     },
-    confirmRestart() {
-      uni.showModal({
-        title: '重新发牌？',
-        content: '当前牌局将作废（不计积分）。',
-        success: res => { if (res.confirm) this.startGame(); },
-      });
-    },
-    goSettings() {
-      uni.navigateTo({ url: '/pages/settings/settings' });
+    leaveRoom() {
+      if (this.onlineMode && this.onlineGameId) {
+        net.gameQuit(this.onlineGameId);
+        uni.redirectTo({ url: '/pages/online/online' });
+        return;
+      }
+      uni.reLaunch({ url: '/pages/cover/cover' });
     },
     goWallet() {
       uni.navigateTo({ url: '/pages/wallet/wallet' });
