@@ -111,6 +111,90 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .lobby-body{flex:1;display:flex;align-items:center;justify-content:center;padding:16px}
 .lobby-card2{width:320px;max-width:94%;background:linear-gradient(180deg,#14493a,#0d3529);border:1px solid #e7c76666;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
 .mode-btn.resume{background:rgba(231,199,102,.16);border-color:#d9b76e;color:#ffe9a8}
+/* 大厅重设计：全页布局 */
+.lobby-scroll{flex:1;display:flex;flex-direction:column;gap:10px;padding:14px 16px 24px;max-width:520px;margin:0 auto;width:100%}
+.lobby-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(120deg,#14493a,#0f3c30);border:1px solid #e7c76666;border-radius:14px;padding:14px;cursor:pointer}
+.lb-avatar{width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;color:#ffe9a8;font-weight:800;flex:none}
+.lb-info{display:flex;flex-direction:column;gap:3px;min-width:0}
+.lb-info b{color:#ffe9a8;font-size:16px}
+.lb-coins{font-size:13px;color:#ffe9a8;font-weight:800}
+.lb-sub{font-size:11px;color:var(--sub)}
+.entry-btn{display:flex;flex-direction:column;gap:3px;align-items:flex-start;background:rgba(18,69,53,.7);border:1px solid var(--line);border-radius:12px;padding:11px 14px;color:var(--cream);font-size:14px;font-weight:700;cursor:pointer}
+.entry-btn small{font-size:10px;color:var(--sub);font-weight:400}
+/* 设置 / 钱包子页 */
+.subpage{min-height:100vh;display:flex;flex-direction:column;background:#0d3b2e}
+.sp-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0d3b2e;z-index:5}
+.back-btn{font-size:14px;color:var(--cream);background:transparent;border:1px solid var(--line);border-radius:16px;padding:5px 14px;cursor:pointer}
+.sp-title{font-size:16px;font-weight:800;color:var(--gold)}
+.sp-body{flex:1;display:flex;flex-direction:column;gap:12px;padding:14px 16px 28px;max-width:520px;margin:0 auto;width:100%}
+.card2{background:#124535;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:11px}
+.card2-title{font-size:14px;font-weight:700;color:var(--cream)}
+.card2-head{display:flex;align-items:center;justify-content:space-between}
+.row2{display:flex;align-items:center;gap:10px}
+.label2{font-size:13px;color:#f0ead5;flex:none;min-width:44px}
+.input2{flex:1;background:#0d3b2e;border:1px solid var(--line);border-radius:8px;padding:8px 11px;color:var(--cream);font-size:14px;outline:none;min-width:0}
+.input2:focus{border-color:var(--gold)}
+.btn.slim{padding:8px 0}
+.btn.danger{background:#7d3742;border-color:#a04a56;color:#ffe4e4}
+.style-opts{display:flex;gap:8px;flex-wrap:wrap}
+.style-opt{font-size:12px;padding:7px 16px;border-radius:16px;color:#f0ead5;background:#0d3b2e;border:1px solid var(--line);cursor:pointer}
+.style-opt.active{background:var(--gold);color:var(--ink);border-color:#d9b76e;font-weight:700}
+.emoji-grid{display:flex;flex-wrap:wrap;gap:7px}
+.emoji-opt{width:38px;height:38px;font-size:20px;display:flex;align-items:center;justify-content:center;background:#124535;border:1px solid var(--line);border-radius:9px;cursor:pointer}
+.emoji-opt.active{border-color:var(--gold);background:#17493a}
+.color-row{display:flex;gap:9px;flex-wrap:wrap}
+.color-dot{display:inline-block;width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer}
+.color-dot.active{border-color:var(--gold);box-shadow:0 0 8px rgba(231,199,102,.6)}
+.back-preview{width:38px;height:53px;border-radius:6px;border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:18px;margin-left:auto}
+/* 钱包 */
+.balance-card2{background:linear-gradient(120deg,#14493a,#0f3c30);border:1px solid #e7c76666;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.bc-label{font-size:11px;color:var(--sub)}
+.bc-num{font-size:26px;font-weight:800;color:#ffe9a8}
+.amounts{display:flex;flex-wrap:wrap;gap:8px}
+.amount{position:relative;flex:1;min-width:88px;display:flex;flex-direction:column;align-items:center;gap:3px;background:#0d3b2e;border:1px solid var(--line);border-radius:10px;padding:10px 4px;color:var(--cream);cursor:pointer}
+.amount.active{border-color:var(--gold);background:#17493a}
+.a-bonus{position:absolute;top:-8px;right:6px;font-size:9px;font-weight:800;color:var(--ink);background:var(--gold);border-radius:8px;padding:1px 6px}
+.a-yuan{font-size:16px;font-weight:800}
+.a-coins{font-size:10px;color:var(--sub)}
+.a-tag{font-size:9px;color:#ffb3b3}
+.channel-row{display:flex;gap:10px}
+.channel-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:20px;padding:10px 0;font-size:14px;font-weight:700;cursor:pointer;border:1px solid transparent}
+.channel-btn.alipay{background:#1677ff;color:#fff}
+.channel-btn.wechat{background:#1aad19;color:#fff}
+.ch-badge{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:11px}
+.tiny-note{font-size:10px;color:var(--sub);line-height:1.5}
+.pill-x{font-size:11px;color:#ffb3b3;background:transparent;border:1px solid #a04a56;border-radius:14px;padding:4px 12px;cursor:pointer}
+.tx-row{display:flex;align-items:center;gap:10px;border-bottom:1px dashed var(--line);padding:8px 0}
+.tx-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+.tx-icon.gain{background:rgba(231,199,102,.18);color:var(--gold)}
+.tx-icon.cost{background:rgba(160,74,86,.2);color:#ffb3b3}
+.tx-info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.tx-info b{font-size:12px;color:#f0ead5;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-info small{font-size:10px;color:var(--sub)}
+.tx-amount{font-size:13px;font-weight:800;color:var(--gold)}
+.tx-amount.neg{color:#ffb3b3}
+.empty-tx{font-size:12px;color:var(--sub);text-align:center;padding:10px 0}
+.safety-note{font-size:10px;color:var(--sub);line-height:1.6;text-align:center;padding:0 10px}
+/* 二维码弹窗 */
+.qr-panel{width:270px;max-width:92%;background:linear-gradient(180deg,#14493a,#0d3529);border:1px solid #e7c76666;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:11px;align-items:center}
+.qr-head{display:flex;align-items:center;justify-content:space-between;width:100%}
+.qr-brand{font-size:12px;font-weight:800;color:#fff;border-radius:8px;padding:4px 10px}
+.qr-brand.alipay{background:#1677ff}
+.qr-brand.wechat{background:#1aad19}
+.qr-pay{font-size:12px;color:var(--cream)}
+.qr-pay b{color:#ffe9a8;font-size:15px}
+.qr-frame{background:#fff;border-radius:10px;padding:8px}
+.qr-grid{display:grid;grid-template-columns:repeat(21,1fr);gap:0;width:168px;height:168px}
+.qr-cell{background:#fff}
+.qr-cell.dark{background:#1a1a1a}
+.qr-breakdown{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);align-items:center}
+.qr-breakdown b{color:#ffe9a8}
+.qr-breakdown .gift{color:#8fd3b6}
+.qr-breakdown .total{font-size:13px;color:var(--cream)}
+/* 自定义牌背 */
+.card-back{position:relative}
+.back-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
+.back-face.kf{font-size:11px}
 </style>
 </head>
 <body>
@@ -143,7 +227,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
             </div>
           </template>
           <template v-else>
-            <div v-for="i in (snap ? snap.handCounts[1] : 17)" :key="i" class="card-back"></div>
+            <div v-for="i in (snap ? snap.handCounts[1] : 17)" :key="i" class="card-back" :style="{ background: backStripe }"><span v-if="profile.style === 'custom'" class="back-face">{{ profile.backEmoji || '🐉' }}</span></div>
           </template>
         </div>
       </div>
@@ -163,7 +247,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
             </div>
           </template>
           <template v-else>
-            <div v-for="i in (snap ? snap.handCounts[2] : 17)" :key="i" class="card-back"></div>
+            <div v-for="i in (snap ? snap.handCounts[2] : 17)" :key="i" class="card-back" :style="{ background: backStripe }"><span v-if="profile.style === 'custom'" class="back-face">{{ profile.backEmoji || '🐉' }}</span></div>
           </template>
         </div>
       </div>
@@ -199,7 +283,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
             </div>
           </template>
           <template v-else>
-            <div v-for="i in 3" :key="i" class="kitty-card" style="background:repeating-linear-gradient(45deg,#1f7a5c 0 4px,#175d46 4px 8px)"></div>
+            <div v-for="i in 3" :key="i" class="kitty-card" :style="{ background: kittyStripe }"><span v-if="profile.style === 'custom'" class="back-face kf">{{ profile.backEmoji || '🐉' }}</span></div>
           </template>
           <span class="kitty-label">底牌</span>
         </div>
@@ -296,25 +380,128 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     <div v-if="!needAuth && screen === 'lobby'" class="lobby-page">
       <div class="lobby-head">
         <div class="topbar-l"><span class="title">牌友斗地主</span><span class="sub">网页版</span></div>
-        <span class="coin-pill">◈ {{ profile.coins }}</span>
+        <button class="mini-btn" @click="screen = 'settings'">⚙ 设置</button>
       </div>
-      <div class="lobby-body">
-        <div class="lobby-card2">
-          <div class="lobby-me" @click="profileOpen = true">
-            <div class="avatar">{{ profile.name.slice(0, 1) }}</div>
-            <div class="lm-info"><b>{{ profile.name }}</b><span>◈ {{ profile.coins }}</span></div>
-            <div class="lm-stats"><span>对局 {{ profile.games }}</span><span>胜率 {{ winRate }}%</span></div>
+      <div class="lobby-scroll">
+        <div class="lobby-banner" @click="profileOpen = true">
+          <div class="lb-avatar" :style="{ background: profile.avatarColor || '#1f7a5c' }">{{ profile.avatarEmoji || profile.name.slice(0, 1) }}</div>
+          <div class="lb-info">
+            <b>{{ profile.name }}</b>
+            <span class="lb-coins">◈ {{ fmtNum(profile.coins) }}</span>
+            <span class="lb-sub">对局 {{ profile.games }} · 胜率 {{ winRate }}%</span>
           </div>
-          <button v-if="canResume" class="mode-btn resume" @click="resumeGame">▶ 回到对局<small>牌局进行中，点击继续</small></button>
-          <button class="mode-btn" @click="modeSolo">🃏 单机模式<small>与 AI 对战 · 四档场次</small></button>
-          <div v-if="roomOpen" class="lobby-rooms">
-            <button v-for="r in ROOMS" :key="r.id" class="room-chip" :class="{ on: roomId === r.id, locked: roomLocked(r) }" @click="pickRoom(r)">
-              <b>{{ r.name }}</b><small>{{ r.base }}底</small><small v-if="roomLocked(r)">🔒</small>
+        </div>
+        <button v-if="canResume" class="mode-btn resume" @click="resumeGame">▶ 回到对局<small>牌局进行中，点击继续</small></button>
+        <button class="mode-btn" @click="modeSolo">🃏 单机模式<small>与 AI 对战 · 四档场次</small></button>
+        <div v-if="roomOpen" class="lobby-rooms">
+          <button v-for="r in ROOMS" :key="r.id" class="room-chip" :class="{ on: roomId === r.id, locked: roomLocked(r) }" @click="pickRoom(r)">
+            <b>{{ r.name }}</b><small>{{ r.base }}底</small><small v-if="roomLocked(r)">🔒</small>
+          </button>
+          <button class="btn primary" style="width:100%" @click="enterGame">开始新对局</button>
+        </div>
+        <button class="mode-btn" @click="goMulti">👥 多人模式<small>联机匹配 · 好友对战</small></button>
+        <button class="entry-btn" @click="screen = 'wallet'">💰 钱包 · 充值<small>积分余额 · 充值赠送 · 签到</small></button>
+        <button class="entry-btn" @click="screen = 'settings'">🎨 设置<small>昵称 · 头像 · 牌背款式</small></button>
+      </div>
+    </div>
+
+    <div v-if="!needAuth && screen === 'settings'" class="subpage">
+      <div class="sp-head"><button class="back-btn" @click="screen = 'lobby'">‹ 返回</button><span class="sp-title">设置</span></div>
+      <div class="sp-body">
+        <div class="card2">
+          <div class="card2-title">我的资料</div>
+          <div class="row2"><span class="label2">昵称</span><input class="input2" v-model="profile.name" maxlength="16" placeholder="给自己起个名字"></div>
+          <div class="row2"><span class="label2">头像</span></div>
+          <div class="emoji-grid">
+            <button v-for="e in EMOJIS" :key="'a' + e" class="emoji-opt" :class="{ active: profile.avatarEmoji === e }" @click="saveEmoji('avatarEmoji', e)">{{ e }}</button>
+          </div>
+          <div class="color-row">
+            <span v-for="c in COLORS" :key="'ac' + c" class="color-dot" :class="{ active: profile.avatarColor === c }" :style="{ background: c }" @click="saveEmoji('avatarColor', c)"></span>
+          </div>
+          <button v-if="profile.avatarEmoji" class="btn slim" @click="resetAvatar">恢复默认头像</button>
+          <button class="btn primary slim" @click="saveProfile">保存资料</button>
+        </div>
+        <div class="card2">
+          <div class="card2-title">牌背款式</div>
+          <div class="style-opts">
+            <button class="style-opt" :class="{ active: profile.style === 'bamboo' }" @click="setStyle('bamboo')">青竹</button>
+            <button class="style-opt" :class="{ active: profile.style === 'phoenix' }" @click="setStyle('phoenix')">朱雀</button>
+            <button class="style-opt" :class="{ active: profile.style === 'custom' }" @click="setStyle('custom')">自定义</button>
+          </div>
+          <div v-if="profile.style === 'custom'" style="display:flex;flex-direction:column;gap:10px">
+            <div class="emoji-grid">
+              <button v-for="e in EMOJIS" :key="'b' + e" class="emoji-opt" :class="{ active: profile.backEmoji === e }" @click="saveEmoji('backEmoji', e)">{{ e }}</button>
+            </div>
+            <div class="color-row">
+              <span v-for="c in COLORS" :key="'bc' + c" class="color-dot" :class="{ active: profile.backColor === c }" :style="{ background: c }" @click="saveEmoji('backColor', c)"></span>
+            </div>
+          </div>
+          <div class="row2">
+            <span class="label2">预览</span>
+            <div class="back-preview" :style="backPreviewStyle"><span>{{ profile.style === 'custom' ? (profile.backEmoji || '🐉') : '' }}</span></div>
+          </div>
+        </div>
+        <div class="card2">
+          <div class="card2-title">账户</div>
+          <div class="row2"><span class="label2">当前账户</span><b style="color:#ffe9a8">{{ accountName }}</b></div>
+          <button class="btn danger" @click="doLogout">退出登录 / 切换账户</button>
+          <button class="btn danger" @click="resetProfile">{{ resetArmed ? '再点一次确认重置' : '重置本账户数据' }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="!needAuth && screen === 'wallet'" class="subpage">
+      <div class="sp-head"><button class="back-btn" @click="screen = 'lobby'">‹ 返回</button><span class="sp-title">钱包</span></div>
+      <div class="sp-body">
+        <div class="balance-card2">
+          <span class="bc-label">积分余额</span>
+          <span class="bc-num">◈ {{ fmtNum(profile.coins) }}</span>
+          <button class="btn slim" :class="{ disabled: checkedToday }" @click="doCheckin" style="min-width:180px">{{ checkedToday ? '今日已签到' : '📅 每日签到 +2000 积分' }}</button>
+        </div>
+        <div class="card2">
+          <div class="card2-head"><span class="card2-title">补充积分</span><span style="font-size:11px;color:var(--sub)">¥1 = 100 积分</span></div>
+          <div class="amounts">
+            <button v-for="opt in amounts" :key="opt.yuan" class="amount" :class="{ active: rechargeYuan === opt.yuan }" @click="rechargeYuan = opt.yuan">
+              <span v-if="opt.bonus > 0" class="a-bonus">赠{{ Math.round(opt.bonus * 100) }}%</span>
+              <span class="a-yuan">¥{{ opt.yuan }}</span>
+              <span class="a-coins">{{ fmtNum(totalCoins(opt)) }} 积分</span>
+              <span v-if="opt.tag" class="a-tag">{{ opt.tag }}</span>
             </button>
-            <button class="btn primary" style="width:100%" @click="enterGame">开始新对局</button>
           </div>
-          <button class="mode-btn" @click="goMulti">👥 多人模式<small>联机匹配 · 好友对战</small></button>
-          <button class="btn" style="width:100%" @click="doLogout">退出登录</button>
+          <div class="channel-row">
+            <button class="channel-btn alipay" @click="qrRecharge('alipay')"><b class="ch-badge">支</b>支付宝充值</button>
+            <button class="channel-btn wechat" @click="qrRecharge('wechat')"><b class="ch-badge">微</b>微信充值</button>
+          </div>
+          <div class="tiny-note">弹出二维码，完成支付后点「确认到账」（演示流程，不会产生真实扣款）。</div>
+        </div>
+        <div class="card2">
+          <div class="card2-head"><span class="card2-title">最近记录</span><button class="pill-x" @click="clearHistory">× 清空记录</button></div>
+          <div v-if="!(profile.transactions && profile.transactions.length)" class="empty-tx">还没有记录，充值后会显示在这里。</div>
+          <div v-for="(tx, i) in profile.transactions" :key="i" class="tx-row">
+            <span class="tx-icon" :class="tx.coins >= 0 ? 'gain' : 'cost'">{{ tx.coins >= 0 ? '↑' : '↓' }}</span>
+            <span class="tx-info"><b>{{ tx.title }}</b><small>{{ tx.date }}</small></span>
+            <span class="tx-amount" :class="{ neg: tx.coins < 0 }">{{ tx.coins >= 0 ? '+' : '−' }}{{ fmtNum(Math.abs(tx.coins)) }}</span>
+          </div>
+        </div>
+        <div class="safety-note">ⓘ 本应用没有接入任何收款渠道，所有订单仅在本机模拟成功。不存在真实支付或资金账户，积分仅用于练习体验，不可提现兑换。</div>
+      </div>
+      <div v-if="qrInfo" class="mask" @click="qrInfo = null">
+        <div class="qr-panel" @click.stop>
+          <div class="qr-head">
+            <span class="qr-brand" :class="qrInfo.channel">{{ qrInfo.channel === 'alipay' ? '支付宝' : '微信支付' }}</span>
+            <span class="qr-pay">扫码支付 <b>¥{{ qrInfo.yuan }}</b></span>
+          </div>
+          <div class="qr-frame">
+            <div class="qr-grid"><span v-for="(cell, i) in qrCells" :key="i" class="qr-cell" :class="{ dark: cell }"></span></div>
+          </div>
+          <div class="qr-breakdown">
+            <span>到账积分 <b>{{ fmtNum(qrBase) }}</b></span>
+            <span v-if="qrBonus > 0" class="gift">赠送 {{ Math.round(qrInfo.bonus * 100) }}% <b>+{{ fmtNum(qrBonus) }}</b></span>
+            <span class="total">实际到账 <b>{{ fmtNum(qrInfo.coins) }} 积分</b></span>
+          </div>
+          <button class="btn primary" style="width:100%" @click="confirmQr">✓ 支付完成 · 确认到账</button>
+          <div class="tiny-note">* 演示环境不会产生真实扣款，点击上方按钮即视为支付成功</div>
+          <button class="btn" style="width:100%" @click="qrInfo = null">取消</button>
         </div>
       </div>
     </div>
@@ -432,6 +619,102 @@ const app = createApp({
     }
     const canResume = computed(() => !onlineMode.value && !!gameRef.value && !!snap.value && snap.value.started && snap.value.phase !== 'over');
     function resumeGame() { screen.value = 'game'; }
+
+    // ---------- 设置 / 钱包（沿用客户端设计） ----------
+    const EMOJIS = ['🐉', '🎋', '🌸', '🍁', '🌙', '⭐', '🏔', '🍵', '🎭', '🕊', '🐺', '♠', '♥', '♦', '♣'];
+    const COLORS = ['#1f7a5c', '#a04a56', '#3a6ea5', '#8a5fb0', '#b07d3a', '#444a55'];
+    const amounts = [
+      { yuan: 1, bonus: 0 },
+      { yuan: 6, bonus: 0.05 },
+      { yuan: 30, bonus: 0.10, tag: '推荐' },
+      { yuan: 68, bonus: 0.20 },
+      { yuan: 128, bonus: 0.30 },
+    ];
+    const rechargeYuan = ref(30);
+    const qrInfo = ref(null);
+    const qrCells = ref([]);
+    const qrBase = ref(0);
+    const qrBonus = ref(0);
+    const resetArmed = ref(false);
+    const accountName = computed(() => account.currentUser() || '未登录');
+    const checkedToday = computed(() => profile.value.checkinDate === todayStr());
+    function fmtNum(n) { return String(n == null ? 0 : n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    function todayStr() { const d = new Date(); const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
+    function nowStr() { const d = new Date(); const p = n => String(n).padStart(2, '0'); return `${todayStr()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+    function totalCoins(opt) { return Math.round(opt.yuan * 100 * (1 + opt.bonus)); }
+    function doCheckin() {
+      if (checkedToday.value) return;
+      profile.value.checkinDate = todayStr();
+      profile.value.points += 2000; profile.value.coins += 2000;
+      save();
+    }
+    function saveProfile() { profile.value.name = (profile.value.name || '').trim() || '牌友'; save(); }
+    function setStyle(s) { profile.value.style = s; save(); }
+    function saveEmoji(field, v) { profile.value[field] = v; save(); }
+    function resetAvatar() { profile.value.avatarEmoji = ''; save(); }
+    function resetProfile() {
+      if (!resetArmed.value) { resetArmed.value = true; setTimeout(() => resetArmed.value = false, 3000); return; }
+      resetArmed.value = false;
+      profile.value = { ...account.DEFAULT_PROFILE, transactions: [] };
+      save();
+    }
+    function clearHistory() { profile.value.transactions = []; save(); }
+    function qrRecharge(channel) {
+      const yuan = rechargeYuan.value;
+      const opt = amounts.find(a => a.yuan === yuan) || { bonus: 0 };
+      const base = yuan * 100;
+      const coins = Math.round(base * (1 + opt.bonus));
+      showQr({ order: 'local-' + Date.now(), yuan, channel, coins, bonus: opt.bonus, seed: 'local:' + yuan + ':' + channel + ':' + Date.now() });
+    }
+    function showQr(info) {
+      qrInfo.value = info;
+      qrBase.value = Math.round(info.yuan * 100);
+      qrBonus.value = info.coins - qrBase.value;
+      let h = 0;
+      for (const ch of info.seed) h = (h * 131 + ch.charCodeAt(0)) >>> 0;
+      const cells = [];
+      const N = 21;
+      for (let y = 0; y < N; y++) {
+        for (let x = 0; x < N; x++) {
+          const finder = (x < 7 && y < 7) || (x >= N - 7 && y < 7) || (x < 7 && y >= N - 7);
+          let dark;
+          if (finder) {
+            const lx = x >= N - 7 ? x - (N - 7) : x;
+            const ly = y >= N - 7 ? y - (N - 7) : y;
+            dark = lx === 0 || lx === 6 || ly === 0 || ly === 6 || (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4);
+          } else {
+            h = (h * 1103515245 + 12345) >>> 0;
+            dark = (h >>> 16) % 100 < 45;
+          }
+          cells.push(dark);
+        }
+      }
+      qrCells.value = cells;
+    }
+    function confirmQr() {
+      const info = qrInfo.value;
+      if (!info) return;
+      profile.value.coins += info.coins;
+      profile.value.points += info.coins;
+      profile.value.transactions.unshift({ title: `演示充值 ¥${info.yuan}（${info.channel === 'alipay' ? '支付宝' : '微信'}扫码）`, coins: info.coins, date: nowStr() });
+      profile.value.transactions = profile.value.transactions.slice(0, 30);
+      save();
+      qrInfo.value = null;
+    }
+    // 自定义牌背：对手手牌与底牌背面
+    const backStripe = computed(() => {
+      if (profile.value.style === 'custom') return profile.value.backColor || '#8a5fb0';
+      if (profile.value.style === 'phoenix') return 'repeating-linear-gradient(45deg,#a04a56 0 7px,#7d3742 7px 14px)';
+      return 'repeating-linear-gradient(45deg,#1f7a5c 0 7px,#175d46 7px 14px)';
+    });
+    const kittyStripe = computed(() => {
+      if (profile.value.style === 'custom') return profile.value.backColor || '#8a5fb0';
+      if (profile.value.style === 'phoenix') return 'repeating-linear-gradient(45deg,#a04a56 0 4px,#7d3742 4px 8px)';
+      return 'repeating-linear-gradient(45deg,#1f7a5c 0 4px,#175d46 4px 8px)';
+    });
+    const backPreviewStyle = computed(() => ({
+      background: profile.value.style === 'custom' ? (profile.value.backColor || '#8a5fb0') : profile.value.style === 'phoenix' ? '#a04a56' : '#1f7a5c',
+    }));
 
     // ---------- 联机模式（服务器权威，REST 轮询） ----------
     let onlineTimer = null;
@@ -596,6 +879,9 @@ const app = createApp({
       myHand, bidOptions, canPass, winRate,
       startGame, toggleCard, doBid, doDouble, doPass, doPlay, doHint, toggleOpen, toggleTrust,
       submitAuth, guestAuth, doLogout, modeSolo, goMulti, pickRoom, enterGame, leaveGame, roomLocked, canResume, resumeGame,
+      EMOJIS, COLORS, amounts, rechargeYuan, qrInfo, qrCells, qrBase, qrBonus, resetArmed, accountName, checkedToday,
+      fmtNum, totalCoins, doCheckin, saveProfile, setStyle, saveEmoji, resetAvatar, resetProfile, clearHistory, qrRecharge, confirmQr,
+      backStripe, kittyStripe, backPreviewStyle,
       cardLabel,
       seat: p => snap.value ? snap.value.seatMeta[p] : null,
       isRed: c => c.suit === '♥' || c.suit === '♦',
