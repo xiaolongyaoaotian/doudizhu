@@ -354,7 +354,7 @@ const app = createApp({
     return {
       profile, snap, selected, finishInfo, profileOpen, hintMsg, dealing, isTrust, robotShow,
       myHand, bidOptions, canPass, winRate,
-      startGame, toggleCard, doBid, doDouble, doPass, doPlay, doHint, toggleOpen,
+      startGame, toggleCard, doBid, doDouble, doPass, doPlay, doHint, toggleOpen, toggleTrust,
       cardLabel,
       seat: p => snap.value ? snap.value.seatMeta[p] : null,
       isRed: c => c.suit === '♥' || c.suit === '♦',
