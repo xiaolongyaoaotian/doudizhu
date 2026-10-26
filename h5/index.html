@@ -90,6 +90,21 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .auth-err{font-size:11px;color:#e08c8c;text-align:center;min-height:14px}
 .auth-links{display:flex;justify-content:center}
 .auth-links a{font-size:11px;color:#8fd3b6;text-decoration:underline;cursor:pointer}
+.lobby-me{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.lobby-me .avatar{width:42px;height:42px;font-size:18px;border-radius:50%;background:#1f7a5c;display:flex;align-items:center;justify-content:center;color:#ffe9a8;font-weight:800;flex:none}
+.lm-info{display:flex;flex-direction:column;gap:2px}
+.lm-info b{color:#ffe9a8;font-size:15px}
+.lm-info span{font-size:12px;color:#c8d8c0}
+.lm-stats{margin-left:auto;display:flex;flex-direction:column;gap:2px;font-size:11px;color:#c8d8c0;text-align:right}
+.mode-btn{display:flex;flex-direction:column;gap:3px;align-items:flex-start;background:rgba(31,122,92,.5);border:1px solid #2a8f6d;border-radius:12px;padding:12px 14px;color:var(--cream);font-size:15px;font-weight:700;cursor:pointer}
+.mode-btn small{font-size:10px;color:var(--sub);font-weight:400}
+.mode-btn:active{transform:scale(.98)}
+.lobby-rooms{display:flex;flex-wrap:wrap;gap:8px}
+.room-chip{flex:1;min-width:45%;background:transparent;border:1px solid #2a8f6d;border-radius:10px;padding:8px 6px;color:var(--cream);cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;font-size:13px;font-weight:700}
+.room-chip small{font-size:10px;color:var(--sub);font-weight:400}
+.room-chip.on{background:var(--gold);color:var(--ink);border-color:#d9b76e}
+.room-chip.on small{color:#6b5410}
+.room-chip.locked{opacity:.45}
 </style>
 </head>
 <body>
@@ -99,9 +114,9 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       <div class="topbar-l"><span class="title">牌友斗地主</span><span class="sub">网页版</span></div>
       <div class="topbar-r">
         <span class="coin-pill">◈ {{ profile.coins }}</span>
-        <button class="mini-btn" :class="{gold:profile.open}" @click="toggleOpen">明牌</button>
-        <button class="mini-btn" :class="{gold:isTrust}" @click="toggleTrust">{{ isTrust ? '托管中' : '托管' }}</button>
-        <button class="mini-btn" @click="startGame">重开</button>
+        <button class="mini-btn" :class="{gold: onlineMode ? (snap && snap.openSeats && snap.openSeats.includes(0)) : profile.open}" @click="toggleOpen">明牌</button>
+        <button v-if="!onlineMode" class="mini-btn" :class="{gold:isTrust}" @click="toggleTrust">{{ isTrust ? '托管中' : '托管' }}</button>
+        <button class="mini-btn" @click="leaveGame">离开</button>
       </div>
     </div>
 
@@ -270,6 +285,26 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       </div>
     </div>
 
+    <div v-if="!needAuth && screen === 'lobby'" class="mask" style="z-index:150;background:rgba(4,18,13,.97)">
+      <div class="panel" style="width:320px" @click.stop>
+        <h3>牌友斗地主</h3>
+        <div class="lobby-me">
+          <div class="avatar">{{ profile.name.slice(0, 1) }}</div>
+          <div class="lm-info"><b>{{ profile.name }}</b><span>◈ {{ profile.coins }}</span></div>
+          <div class="lm-stats"><span>对局 {{ profile.games }}</span><span>胜率 {{ winRate }}%</span></div>
+        </div>
+        <button class="mode-btn" @click="modeSolo">🃏 单机模式<small>与 AI 对战 · 四档场次</small></button>
+        <div v-if="roomOpen" class="lobby-rooms">
+          <button v-for="r in ROOMS" :key="r.id" class="room-chip" :class="{ on: roomId === r.id, locked: roomLocked(r) }" @click="pickRoom(r)">
+            <b>{{ r.name }}</b><small>{{ r.base }}底</small><small v-if="roomLocked(r)">🔒</small>
+          </button>
+          <button class="btn primary" style="width:100%" @click="enterGame">开始对局</button>
+        </div>
+        <button class="mode-btn" @click="goMulti">👥 多人模式<small>联机匹配 · 好友对战</small></button>
+        <button class="btn" style="width:100%" @click="doLogout">退出登录</button>
+      </div>
+    </div>
+
     <div v-if="needAuth" class="mask" style="z-index:200">
       <div class="panel" @click.stop>
         <h3>{{ authMode === 'login' ? '登录' : '注册' }}</h3>
@@ -296,8 +331,18 @@ globalThis.uni = {
   getStorageSync(k) { const v = localStorage.getItem(k); if (v == null) return ''; try { return JSON.parse(v); } catch (e) { return v; } },
   setStorageSync(k, v) { localStorage.setItem(k, JSON.stringify(v)); },
   removeStorageSync(k) { localStorage.removeItem(k); },
+  request(opt) {
+    const { url, method = 'GET', data, header = {}, timeout = 8000 } = opt;
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), timeout);
+    fetch(url, { method, headers: header, body: data ? JSON.stringify(data) : undefined, signal: ctl.signal })
+      .then(r => r.json())
+      .then(d => { clearTimeout(t); opt.success({ data: d && typeof d === 'object' ? d : { ok: false, error: '响应异常' } }); })
+      .catch(() => { clearTimeout(t); opt.fail({ errMsg: '网络错误' }); });
+  },
 };
 const account = await import('../common/account.js');
+const net = await import('../common/net.js');
 const LEGACY_WEB = 'ddz-web-v1';   // 旧版网页版单机数据，首次登录时迁入账户
 
 const app = createApp({
@@ -308,6 +353,17 @@ const app = createApp({
     const authName = ref('');
     const authPwd = ref('');
     const authErr = ref('');
+    const screen = ref('lobby');           // lobby | game
+    const onlineMode = ref(false);
+    const onlineGameId = ref('');
+    const roomOpen = ref(false);
+    const ROOMS = [
+      { id: 100, name: '小白场', base: 100 },
+      { id: 1000, name: '初级场', base: 1000 },
+      { id: 10000, name: '中级场', base: 10000 },
+      { id: 100000, name: '高级场', base: 100000 },
+    ];
+    const roomId = ref(100);
     const gameRef = ref(null);
     const snap = ref(null);
     const selected = ref([]);
@@ -331,6 +387,82 @@ const app = createApp({
       dealing.value = true;
       setTimeout(() => dealing.value = false, 800);
       gameRef.value.startGame();
+    }
+
+    // ---------- 主界面 ----------
+    const picked = computed(() => ROOMS.find(r => r.id === roomId.value) || ROOMS[0]);
+    function roomLocked(r) { return profile.value.coins < r.base * 2; }   // 入场门槛：2 倍底数
+    function modeSolo() { roomOpen.value = true; }
+    function goMulti() { location.href = 'online.html'; }
+    function pickRoom(r) { if (!roomLocked(r)) roomId.value = r.id; }
+    function enterGame() {
+      if (roomLocked(picked.value)) return;
+      if (!gameRef.value) initGame();
+      else gameRef.value.roomBase = picked.value.base;
+      screen.value = 'game';
+      startGame();
+    }
+    function leaveGame() {
+      if (onlineMode.value) {
+        stopOnlinePolling();
+        if (onlineGameId.value) net.gameQuit(onlineGameId.value);
+        onlineMode.value = false; onlineGameId.value = '';
+        history.replaceState(null, '', location.pathname);
+      } else if (gameRef.value) {
+        gameRef.value.destroy();
+        gameRef.value = null;
+      }
+      finishInfo.value = null; isTrust.value = false; selected.value = []; hintMsg.value = '';
+      screen.value = 'lobby';
+      needAuth.value = !account.currentUser();
+      const p = account.getProfile();
+      if (p) profile.value = p;
+    }
+
+    // ---------- 联机模式（服务器权威，REST 轮询） ----------
+    let onlineTimer = null;
+    function startOnlinePolling() {
+      stopOnlinePolling();
+      onlineTimer = setInterval(pollOnline, 1000);
+      pollOnline();
+    }
+    function stopOnlinePolling() { if (onlineTimer) { clearInterval(onlineTimer); onlineTimer = null; } }
+    function pollOnline() {
+      net.gameState(onlineGameId.value).then(r => { if (r.ok) applyServerState(r.state); });
+    }
+    function applyServerState(st) {
+      const seats = st.players;
+      const multTotal = st.multTotal != null ? st.multTotal : (st.mults ? st.mults[0] * st.mults[1] * st.mults[2] : 1);
+      snap.value = {
+        phase: st.phase, current: st.current, started: st.phase !== 'deal', finished: st.over,
+        hands: [st.myHand || [], (st.openHands && st.openHands['1']) || [], (st.openHands && st.openHands['2']) || []],
+        openSeats: st.openSeats || [],
+        kitty: st.kitty || [],
+        landlord: st.landlord, bids: st.bids, maxBid: st.maxBid,
+        base: st.base, mults: st.mults, doubled: st.doubled,
+        bombCount: st.bombCount, redraws: 0,
+        handCounts: st.handCounts,
+        points: st.base * multTotal * Math.pow(2, st.bombCount || 0),
+        roundText: st.roundText, trust: false, shown: st.shown,
+        seatMeta: [null,
+          seats[1] ? { name: seats[1].name, avatar: seats[1].avatar, color: seats[1].color, level: 'mid' } : null,
+          seats[2] ? { name: seats[2].name, avatar: seats[2].avatar, color: seats[2].color, level: 'mid' } : null],
+      };
+      if (st.over && !finishInfo.value) {
+        const fin = st.finish || { delta: [0, 0, 0], pts: 0, spring: false, antiSpring: false };
+        finishInfo.value = {
+          title: fin.delta[0] > 0 ? '农民/你方获胜！' : '对方获胜',
+          delta: fin.delta, winner: st.landlord,
+        };
+        stopOnlinePolling();
+        net.serverProfile().then(r => {
+          if (r.ok) {
+            profile.value.points = r.user.points; profile.value.games = r.user.games;
+            profile.value.wins = r.user.wins; profile.value.coins = r.user.points;
+            account.saveProfile(profile.value);
+          }
+        });
+      }
     }
 
     function initGame() {
@@ -360,20 +492,25 @@ const app = createApp({
       const i = selected.value.indexOf(c.id);
       if (i >= 0) selected.value.splice(i, 1); else selected.value.push(c.id);
     }
-    function doBid(v) { gameRef.value.humanBid(v); }
-    function doDouble(m) { gameRef.value.humanDouble(m); }
-    function doPass() { selected.value = []; gameRef.value.humanPass(); }
+    function doBid(v) { if (onlineMode.value) { net.gameAction(onlineGameId.value, 'bid', v); return; } gameRef.value.humanBid(v); }
+    function doDouble(m) { if (onlineMode.value) { net.gameAction(onlineGameId.value, 'double', m); return; } gameRef.value.humanDouble(m); }
+    function doPass() { selected.value = []; if (onlineMode.value) { net.gameAction(onlineGameId.value, 'pass'); return; } gameRef.value.humanPass(); }
     function doPlay() {
       if (!selected.value.length) return;
-      const picked = myHand.value.filter(c => selected.value.includes(c.id));
-      gameRef.value.humanPlay(picked); selected.value = []; hintMsg.value = '';
+      const cards = myHand.value.filter(c => selected.value.includes(c.id));
+      selected.value = []; hintMsg.value = '';
+      if (onlineMode.value) { net.gameAction(onlineGameId.value, 'play', 0, cards); return; }
+      gameRef.value.humanPlay(cards);
     }
     function doHint() {
       const h = gameRef.value.hint();
       if (h && h.length) { selected.value = h.map(c => c.id); hintMsg.value = '已选牌，点「出牌」'; }
       else hintMsg.value = canPass.value ? '没有能压过的牌，可「不出」' : '轮到你领出';
     }
-    function toggleOpen() { profile.value.open = !profile.value.open; save(); }
+    function toggleOpen() {
+      if (onlineMode.value) { net.gameOpen(onlineGameId.value); return; }
+      profile.value.open = !profile.value.open; save();
+    }
     function migrateLegacyWeb() {
       // 旧版单机数据一次性迁入当前账户（仅当账户无战绩时）
       try {
@@ -395,7 +532,7 @@ const app = createApp({
       if (p) profile.value = p;
       authPwd.value = ''; authErr.value = '';
       needAuth.value = false;
-      startGame();
+      screen.value = 'lobby';
     }
     function submitAuth() {
       authErr.value = '';
@@ -423,14 +560,28 @@ const app = createApp({
       }
     }
 
-    onMounted(() => initGame());
+    onMounted(() => {
+      const q = new URLSearchParams(location.search);
+      const gid = q.get('online');
+      if (gid) {
+        if (!net.isOnline()) { location.href = 'online.html'; return; }
+        onlineMode.value = true;
+        onlineGameId.value = gid;
+        needAuth.value = false;
+        screen.value = 'game';
+        startOnlinePolling();
+        return;
+      }
+      initGame();
+    });
 
     return {
       profile, snap, selected, finishInfo, profileOpen, hintMsg, dealing, isTrust, robotShow,
       needAuth, authMode, authName, authPwd, authErr,
+      screen, onlineMode, ROOMS, roomId, roomOpen,
       myHand, bidOptions, canPass, winRate,
       startGame, toggleCard, doBid, doDouble, doPass, doPlay, doHint, toggleOpen, toggleTrust,
-      submitAuth, guestAuth, doLogout,
+      submitAuth, guestAuth, doLogout, modeSolo, goMulti, pickRoom, enterGame, leaveGame, roomLocked,
       cardLabel,
       seat: p => snap.value ? snap.value.seatMeta[p] : null,
       isRed: c => c.suit === '♥' || c.suit === '♦',
