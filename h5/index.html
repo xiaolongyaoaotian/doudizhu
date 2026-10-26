@@ -84,6 +84,12 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .panel .row b{color:#ffe9a8}
 .panel .row b.neg{color:#e08c8c}
 .panel .btn{width:100%;text-align:center}
+.auth-tip{font-size:11px;color:#c8d8c0;text-align:center}
+.auth-input{width:100%;box-sizing:border-box;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid #2a8f6d;background:rgba(6,26,20,.6);color:#ffe9a8;outline:none}
+.auth-input:focus{border-color:var(--gold)}
+.auth-err{font-size:11px;color:#e08c8c;text-align:center;min-height:14px}
+.auth-links{display:flex;justify-content:center}
+.auth-links a{font-size:11px;color:#8fd3b6;text-decoration:underline;cursor:pointer}
 </style>
 </head>
 <body>
@@ -234,7 +240,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     </div>
 
     <div class="me-head" @click="profileOpen = true">
-      <div class="avatar">你</div>
+      <div class="avatar">{{ profile.name.slice(0, 1) }}</div>
       <div class="me-col">
         <span v-if="showRole(0)" class="role-tag">地主</span>
         <span class="opp-count">{{ snap ? snap.handCounts[0] : 0 }}张</span>
@@ -260,6 +266,20 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <div class="row"><span>积分</span><b>{{ profile.points }}</b></div>
         <div class="row"><span>余额</span><b>◈ {{ profile.coins }}</b></div>
         <button class="btn" @click="profileOpen = false">关闭</button>
+        <button class="btn" @click="doLogout">退出登录</button>
+      </div>
+    </div>
+
+    <div v-if="needAuth" class="mask" style="z-index:200">
+      <div class="panel" @click.stop>
+        <h3>{{ authMode === 'login' ? '登录' : '注册' }}</h3>
+        <div class="auth-tip">{{ authMode === 'login' ? '登录后才能统计对局数、胜率与积分' : '注册账号，对局数 / 胜率 / 积分随账号保存' }}</div>
+        <input class="auth-input" v-model="authName" placeholder="用户名（2-16 字符）" maxlength="16">
+        <input class="auth-input" v-model="authPwd" type="password" placeholder="密码（至少 4 位）" maxlength="20" @keyup.enter="submitAuth">
+        <div class="auth-err">{{ authErr }}</div>
+        <button class="btn primary" @click="submitAuth">{{ authMode === 'login' ? '登录并开始' : '注册并开始' }}</button>
+        <div class="auth-links"><a @click="authMode = (authMode === 'login' ? 'reg' : 'login'); authErr = ''">{{ authMode === 'login' ? '没有账号？去注册' : '已有账号？去登录' }}</a></div>
+        <button class="btn" @click="guestAuth">游客模式</button>
       </div>
     </div>
   </div>
@@ -271,13 +291,23 @@ const { createApp, ref, computed, onMounted } = Vue;
 const engine = await import('../common/ddz-engine.js');
 const { DDZGame, label: cardLabel } = engine;
 
-const STORE = 'ddz-web-v1';
-const DEFAULT = { name: '你', games: 0, wins: 0, points: 0, coins: 12000, open: false };
-const load = () => { try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(STORE) || '{}') }; } catch { return { ...DEFAULT }; } };
+// uni 存储垫片：account.js 依赖 uni.*StorageSync，网页版映射到 localStorage
+globalThis.uni = {
+  getStorageSync(k) { const v = localStorage.getItem(k); if (v == null) return ''; try { return JSON.parse(v); } catch (e) { return v; } },
+  setStorageSync(k, v) { localStorage.setItem(k, JSON.stringify(v)); },
+  removeStorageSync(k) { localStorage.removeItem(k); },
+};
+const account = await import('../common/account.js');
+const LEGACY_WEB = 'ddz-web-v1';   // 旧版网页版单机数据，首次登录时迁入账户
 
 const app = createApp({
   setup() {
-    const profile = ref(load());
+    const profile = ref(account.getProfile() || { ...account.DEFAULT_PROFILE });
+    const needAuth = ref(!account.currentUser());
+    const authMode = ref('login');
+    const authName = ref('');
+    const authPwd = ref('');
+    const authErr = ref('');
     const gameRef = ref(null);
     const snap = ref(null);
     const selected = ref([]);
@@ -293,9 +323,10 @@ const app = createApp({
     const canPass = computed(() => !!(snap.value && snap.value.last && snap.value.last.player !== 0));
     const winRate = computed(() => profile.value.games ? Math.round(profile.value.wins * 100 / profile.value.games) : 0);
 
-    function save() { localStorage.setItem(STORE, JSON.stringify(profile.value)); }
+    function save() { account.saveProfile(profile.value); }
 
     function startGame() {
+      if (needAuth.value) return;
       selected.value = []; finishInfo.value = null; hintMsg.value = '';
       dealing.value = true;
       setTimeout(() => dealing.value = false, 800);
@@ -343,6 +374,44 @@ const app = createApp({
       else hintMsg.value = canPass.value ? '没有能压过的牌，可「不出」' : '轮到你领出';
     }
     function toggleOpen() { profile.value.open = !profile.value.open; save(); }
+    function migrateLegacyWeb() {
+      // 旧版单机数据一次性迁入当前账户（仅当账户无战绩时）
+      try {
+        const raw = localStorage.getItem(LEGACY_WEB);
+        if (!raw) return;
+        const old = JSON.parse(raw);
+        localStorage.removeItem(LEGACY_WEB);
+        const p = account.getProfile();
+        if (!p || !old) return;
+        if ((p.games || 0) === 0 && (old.games > 0 || old.points || old.coins != null)) {
+          profile.value = { ...p, games: old.games || 0, wins: old.wins || 0, points: old.points || 0, coins: old.coins != null ? old.coins : p.coins, open: !!old.open };
+          account.saveProfile(profile.value);
+        }
+      } catch (e) { /* 迁移失败不阻塞 */ }
+    }
+    function afterAuth() {
+      migrateLegacyWeb();
+      const p = account.getProfile();
+      if (p) profile.value = p;
+      authPwd.value = ''; authErr.value = '';
+      needAuth.value = false;
+      startGame();
+    }
+    function submitAuth() {
+      authErr.value = '';
+      try {
+        if (authMode.value === 'login') account.login(authName.value, authPwd.value);
+        else account.register(authName.value, authPwd.value);
+        afterAuth();
+      } catch (e) { authErr.value = e.message || '操作失败'; }
+    }
+    function guestAuth() { account.loginGuest(); afterAuth(); }
+    function doLogout() {
+      account.logout();
+      profileOpen.value = false;
+      needAuth.value = true;
+      authMode.value = 'login';
+    }
     function toggleTrust() {
       isTrust.value = !isTrust.value;
       if (isTrust.value) {
@@ -358,8 +427,10 @@ const app = createApp({
 
     return {
       profile, snap, selected, finishInfo, profileOpen, hintMsg, dealing, isTrust, robotShow,
+      needAuth, authMode, authName, authPwd, authErr,
       myHand, bidOptions, canPass, winRate,
       startGame, toggleCard, doBid, doDouble, doPass, doPlay, doHint, toggleOpen, toggleTrust,
+      submitAuth, guestAuth, doLogout,
       cardLabel,
       seat: p => snap.value ? snap.value.seatMeta[p] : null,
       isRed: c => c.suit === '♥' || c.suit === '♦',
