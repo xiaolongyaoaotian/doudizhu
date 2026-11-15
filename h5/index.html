@@ -6,7 +6,10 @@
 <title>牌友斗地主 · 网页版</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--gold:#ffd76e;--gold-d:#f0a93c;--ink:#2c1a08;--felt:#0d3b2e;--felt2:#14614a;--panel:#10352a;--line:#1e5c48;--cream:#f7f1de;--sub:#9db8a8}
+:root{--gold:#ffd76e;--gold-d:#f0a93c;--ink:#2c1a08;--felt:#0d3b2e;--felt2:#14614a;--panel:#10352a;--line:#1e5c48;--cream:#f7f1de;--sub:#9db8a8;--cw:48px;--ch:66px;--rank:16px;--suit:12px;--kw:32px;--kh:44px;--hov:-30px;--pz-left:92px;--pz-top:74px}
+@media (min-width: 980px){
+  :root{--cw:58px;--ch:80px;--rank:19px;--suit:14px;--kw:40px;--kh:56px;--hov:-36px;--pz-left:132px;--pz-top:96px}
+}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--felt);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
 [v-cloak]{display:none}
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(16,53,42,.9);border-bottom:1px solid var(--line);flex-shrink:0}
@@ -17,66 +20,71 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .mini-btn.gold{background:var(--gold);color:var(--ink);font-weight:700;border-color:#d9b76e}
 .coin-pill{font-size:11px;color:#ffe9a8;background:rgba(10,47,36,.7);border:1px solid #e7c76666;border-radius:14px;padding:4px 10px;font-weight:700}
 .table{position:relative;flex:1;margin:4px 6px;border-radius:14px;padding:10px;background:radial-gradient(ellipse at 50% 30%,var(--felt2),#0a382b 100%);border:2px solid var(--line);overflow:hidden;display:flex;flex-direction:column}
-.opp{position:absolute;top:8px;display:flex;flex-direction:column;gap:4px;width:130px}
-.opp-a{left:6px;align-items:flex-start}
-.opp-b{right:6px;align-items:flex-end}
-.opp-info{display:flex;align-items:center;gap:4px}
-.opp-name{font-size:11px;color:#f0ead5;font-weight:600}
-.opp-count{font-size:10px;color:var(--sub)}
+.opp{position:absolute;top:10px;display:flex;flex-direction:column;gap:4px;max-width:170px}
+.opp-a{left:8px;align-items:flex-start}
+.opp-b{right:8px;align-items:flex-end}
+.opp-info{display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%}
+.opp-name{font-size:12px;color:#f0ead5;font-weight:600;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opp-count{font-size:11px;color:var(--sub);white-space:nowrap}
 .level-tag{font-size:9px;color:#fff;border-radius:6px;padding:1px 5px;font-weight:700}
 .level-tag.low{background:#b07d3a}.level-tag.mid{background:#6d7f8f}.level-tag.high{background:#c9a13b;color:var(--ink)}
 .role-tag{font-size:9px;color:var(--ink);background:var(--gold);border-radius:5px;padding:1px 5px;font-weight:700}
-.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;border:1px solid var(--gold);color:#fff;cursor:pointer;flex-shrink:0}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;border:1px solid var(--gold);color:#fff;cursor:pointer;flex-shrink:0}
 .avatar.rose{background:#a04a56}
 .opp-cards{display:flex;flex-direction:column;align-items:flex-start}
 .opp-cards.right{align-items:flex-end}
-.card-back{width:56px;height:38px;border-radius:5px;margin-top:-26px;background:repeating-linear-gradient(45deg,#1f7a5c 0 7px,#175d46 7px 14px);border:1px solid rgba(231,199,102,.4);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.card-back{width:calc(var(--cw)*1.15);height:calc(var(--cw)*0.78);border-radius:6px;margin-top:calc(var(--cw)*-0.52);background:repeating-linear-gradient(45deg,#1f7a5c 0 7px,#175d46 7px 14px);border:1px solid rgba(231,199,102,.4);box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .card-back:first-child{margin-top:0}
-.play-zone{position:absolute;display:flex;flex-direction:column;align-items:flex-start;width:70px;max-height:180px;overflow:hidden}
-.play-l{left:68px;top:60px}.play-r{right:68px;top:60px;align-items:flex-end}
-.shown-card{position:relative;width:58px;height:40px;border-radius:5px;margin-top:-26px;background:#fffef8;border:1px solid #d8d5c6;color:#23252b;box-shadow:0 1px 4px rgba(0,0,0,.25);overflow:hidden}
+.play-zone{position:absolute;display:flex;flex-direction:column;align-items:flex-start;width:calc(var(--ch)*1.15);max-height:calc(var(--ch)*2.6);overflow:hidden}
+.play-l{left:var(--pz-left);top:var(--pz-top)}.play-r{right:var(--pz-left);top:var(--pz-top);align-items:flex-end}
+.shown-card{position:relative;width:calc(var(--ch)*0.9);height:calc(var(--cw)*0.92);border-radius:6px;margin-top:calc(var(--cw)*-0.58);background:#fffef8;border:1px solid #d8d5c6;color:#23252b;box-shadow:0 1px 4px rgba(0,0,0,.25);overflow:hidden}
 .shown-card:first-child{margin-top:0}
 .shown-card.red{color:#b3372e}
-.sc-rot{position:absolute;left:50%;top:50%;width:40px;height:58px;display:flex;flex-direction:column;align-items:flex-start;padding:4px 0 0 4px;transform:translate(-50%,-50%) rotate(90deg)}
-.sc-rank{font-size:13px;font-weight:800;line-height:1}
-.sc-suit{font-size:10px;line-height:1;margin-top:1px}
-.pass-pill{font-size:10px;color:#bfe3d0;border:1px solid #2a8f6d;border-radius:12px;padding:2px 10px;background:rgba(15,77,58,.5)}
-.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;padding:4px 0 2px;min-height:0}
-.kitty{display:flex;align-items:center;gap:3px}
-.kitty-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;width:24px;height:33px;border-radius:4px;background:#fffef8;border:1px solid #d8d5c6;color:#23252b;padding:2px 0 0 3px}
+.sc-rot{position:absolute;left:50%;top:50%;width:var(--cw);height:var(--ch);display:flex;flex-direction:column;align-items:flex-start;padding:4px 0 0 5px;transform:translate(-50%,-50%) rotate(90deg)}
+.sc-rank{font-size:var(--rank);font-weight:800;line-height:1}
+.sc-suit{font-size:var(--suit);line-height:1;margin-top:1px}
+.pass-pill{font-size:11px;color:#bfe3d0;border:1px solid #2a8f6d;border-radius:12px;padding:3px 12px;background:rgba(15,77,58,.5)}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;padding:6px 0 2px;min-height:0}
+.kitty{display:flex;align-items:center;gap:4px}
+.kitty-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;width:var(--kw);height:var(--kh);border-radius:5px;background:#fffef8;border:1px solid #d8d5c6;color:#23252b;padding:3px 0 0 4px}
 .kitty-card.red{color:#b3372e}
-.kitty-card .hc-rank{font-size:10px}
-.kitty-card .hc-suit{font-size:7px}
-.kitty-card .hc-suit.joker{font-size:4px;letter-spacing:.3px}
-.kitty-label{font-size:9px;color:var(--sub);margin-left:3px}
-.round{font-size:11px;color:#ffe9a8;text-align:center}
-.mult{font-size:9px;color:#c8d8c0;text-align:center}
+.kitty-card .hc-rank{font-size:calc(var(--kw)*0.34)}
+.kitty-card .hc-suit{font-size:calc(var(--kw)*0.23)}
+.kitty-card .hc-suit.joker{font-size:calc(var(--kw)*0.14);letter-spacing:.3px}
+.kitty-label{font-size:10px;color:var(--sub);margin-left:4px}
+.round{font-size:12px;color:#ffe9a8;text-align:center}
+.mult{font-size:10px;color:#c8d8c0;text-align:center}
 /* 下方出牌区：正常竖放卡牌，堆叠排列 */
-.my-shown{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;min-height:56px;max-width:96%}
-.my-shown .shown-card{margin-top:0;width:38px;height:54px;margin-left:-18px;position:relative;flex-direction:column;align-items:flex-start;padding:4px 0 0 5px;border-radius:5px}
+.my-shown{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;min-height:calc(var(--ch) + 8px);max-width:96%}
+.my-shown .shown-card{margin-top:0;width:var(--cw);height:var(--ch);margin-left:calc(var(--hov) + 6px);position:relative;flex-direction:column;align-items:flex-start;padding:4px 0 0 5px;border-radius:5px;overflow:visible}
 .my-shown .shown-card:first-child{margin-left:0}
 .my-shown .shown-card .sc-rot{position:static;width:auto;height:auto;transform:none;padding:0;display:flex;flex-direction:column;align-items:flex-start}
-.my-shown .sc-rank{font-size:14px;font-weight:800;line-height:1}
-.my-shown .sc-suit{font-size:11px;line-height:1.1;margin-top:1px}
-.placeholder{font-size:10px;color:var(--sub)}
-.actions{display:flex;justify-content:center;align-items:center;gap:8px;padding:2px 8px 1px;flex-wrap:wrap;position:relative}
-.btn{font-size:12px;font-weight:700;color:var(--cream);background:#1f7a5c;border:1px solid #2a8f6d;border-radius:18px;padding:6px 18px;cursor:pointer;transition:transform .1s}
+.my-shown .sc-rank{font-size:var(--rank);font-weight:800;line-height:1}
+.my-shown .sc-suit{font-size:var(--suit);line-height:1.1;margin-top:1px}
+.placeholder{font-size:11px;color:var(--sub)}
+.hint-line{width:100%;text-align:center;font-size:11px;color:#ffe9a8;min-height:15px;line-height:15px;order:-1}
+.actions{display:flex;justify-content:center;align-items:center;gap:10px;padding:3px 10px 2px;flex-wrap:wrap;position:relative}
+.btn{font-size:13px;font-weight:700;color:var(--cream);background:#1f7a5c;border:1px solid #2a8f6d;border-radius:20px;padding:7px 20px;cursor:pointer;transition:transform .1s}
 .btn:active{transform:scale(.95)}
 .btn.primary{background:var(--gold);color:var(--ink);border-color:#d9b76e}
 .btn.disabled{opacity:.5;pointer-events:none}
-.hand{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;min-height:60px;padding-bottom:2px;row-gap:6px}
-.hand-card{display:flex;flex-direction:column;align-items:flex-start;width:38px;height:54px;margin-left:-22px;padding:4px 0 0 5px;border-radius:5px;background:#fffef8;border:1px solid #d8d5c6;color:#23252b;position:relative;transition:transform .08s;cursor:pointer}
+.hand{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;min-height:calc(var(--ch) + 16px);padding-bottom:2px;row-gap:6px}
+.hand-card{display:flex;flex-direction:column;align-items:flex-start;width:var(--cw);height:var(--ch);margin-left:var(--hov);padding:5px 0 0 6px;border-radius:6px;background:#fffef8;border:1px solid #d8d5c6;color:#23252b;position:relative;transition:transform .08s;cursor:pointer}
 .hand-card:first-child{margin-left:0}
 .hand-card.red{color:#b3372e}
-.hand-card.sel{transform:translateY(-12px);border-color:var(--gold);box-shadow:0 0 6px rgba(231,199,102,.6)}
-.hc-rank{font-size:14px;font-weight:800;line-height:1}
-.hc-suit{font-size:11px;line-height:1.1;margin-top:1px}
-.hc-suit.joker{font-size:6px;font-weight:700;letter-spacing:.5px}
+.hand-card.sel{transform:translateY(-14px);border-color:var(--gold);box-shadow:0 0 6px rgba(231,199,102,.6)}
+.hc-rank{font-size:var(--rank);font-weight:800;line-height:1}
+.hc-suit{font-size:var(--suit);line-height:1.1;margin-top:1px}
+.hc-suit.joker{font-size:calc(var(--rank)*0.45);font-weight:700;letter-spacing:.5px}
 @keyframes robotFloat{0%{opacity:0;transform:translateX(-50%) translateY(8px) scale(.6)}20%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.1)}80%{opacity:1;transform:translateX(-50%) translateY(-4px) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-15px) scale(.8)}}
-.me-head{position:fixed;left:72px;bottom:3px;display:flex;align-items:center;gap:6px;background:rgba(10,47,36,.85);border:1px solid #2a8f6d;border-radius:10px;padding:5px 10px;z-index:30;cursor:pointer}
+.me-head{position:fixed;left:14px;bottom:6px;display:flex;align-items:center;gap:6px;background:rgba(10,47,36,.85);border:1px solid #2a8f6d;border-radius:10px;padding:5px 10px;z-index:30;cursor:pointer}
 .me-head .avatar{width:28px;height:28px;font-size:12px}
 .me-col{display:flex;flex-direction:column;gap:1px}
 .me-col .opp-count{font-size:10px}
+/* 手机竖屏：对局强制横显（旋转 90°，横持手机即为正向；基本功能页不受影响） */
+@media (max-width: 860px) and (orientation: portrait){
+  .game-view.game-view{position:fixed;top:0;left:100vw;width:100vh;width:100lvh;height:100vw;min-height:0;transform:rotate(90deg);transform-origin:0 0;z-index:60;background:var(--felt)}
+}
 .mask{position:fixed;inset:0;background:rgba(4,18,13,.78);display:flex;align-items:center;justify-content:center;z-index:100}
 .panel{width:280px;max-width:92%;background:linear-gradient(180deg,#14493a,#0d3529);border:1px solid #e7c76666;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
 .panel h3{font-size:18px;font-weight:800;color:var(--gold);text-align:center}
@@ -305,7 +313,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       </div>
 
       <div class="actions">
-        <span v-if="hintMsg" style="position:absolute;top:-16px;font-size:10px;color:#ffe9a8">{{ hintMsg }}</span>
+        <div v-if="hintMsg" class="hint-line">{{ hintMsg }}</div>
         <template v-if="dealing"><button class="btn disabled" disabled>发牌中…</button></template>
         <template v-else-if="!snap || snap.phase === 'idle' || snap.phase === 'over'">
           <button class="btn primary" @click="startGame">开始游戏</button>
@@ -596,11 +604,24 @@ const app = createApp({
     function modeSolo() { roomOpen.value = true; }
     function goMulti() { location.href = location.pathname.indexOf('/h5/') === 0 ? 'online.html' : '/online/muti-fight'; }
     function pickRoom(r) { if (!roomLocked(r)) roomId.value = r.id; }
+    // 手机对局默认横屏：优先原生锁定（Android），失败则由 CSS 旋转兜底（iOS）
+    async function tryLandscape() {
+      try {
+        const el = document.documentElement;
+        if (!document.fullscreenElement && el.requestFullscreen) await el.requestFullscreen({ navigationUI: 'hide' });
+        if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
+      } catch (e) { /* 不支持 → CSS 媒体查询兜底 */ }
+    }
+    function exitLandscape() {
+      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+      try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {}
+    }
     function enterGame() {
       if (roomLocked(picked.value)) return;
       if (!gameRef.value) initGame();
       else gameRef.value.roomBase = picked.value.base;
       screen.value = 'game';
+      tryLandscape();
       startGame();
     }
     function leaveGame() {
@@ -612,13 +633,14 @@ const app = createApp({
       }
       // 单机对局保留实例，主界面可"回到对局"继续
       selected.value = []; hintMsg.value = '';
+      exitLandscape();
       screen.value = 'lobby';
       needAuth.value = !account.currentUser();
       const p = account.getProfile();
       if (p) profile.value = p;
     }
     const canResume = computed(() => !onlineMode.value && !!gameRef.value && !!snap.value && snap.value.started && snap.value.phase !== 'over');
-    function resumeGame() { screen.value = 'game'; }
+    function resumeGame() { screen.value = 'game'; tryLandscape(); }
 
     // ---------- 设置 / 钱包（沿用客户端设计） ----------
     const EMOJIS = ['🐉', '🎋', '🌸', '🍁', '🌙', '⭐', '🏔', '🍵', '🎭', '🕊', '🐺', '♠', '♥', '♦', '♣'];
