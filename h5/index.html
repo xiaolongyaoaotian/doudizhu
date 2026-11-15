@@ -358,8 +358,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       <div class="panel" @click.stop>
         <h3>{{ finishInfo.title }}</h3>
         <div class="row"><span>你的积分</span><b :class="{neg: finishInfo.delta[0] < 0}">{{ finishInfo.delta[0] >= 0 ? '+' : '' }}{{ finishInfo.delta[0] }}</b></div>
-        <div class="row"><span>当前积分</span><b>{{ profile.points }}</b></div>
-        <div class="row"><span>当前余额</span><b>◈ {{ profile.coins }}</b></div>
+        <div class="row"><span>{{ onlineMode ? '天梯积分' : '当前积分' }}</span><b>{{ onlineMode && srvStats ? srvStats.points : profile.points }}</b></div>
+        <div v-if="!onlineMode" class="row"><span>当前余额</span><b>◈ {{ profile.coins }}</b></div>
         <button class="btn primary" @click="finishInfo = null; startGame()">再来一局</button>
         <button class="btn" @click="finishInfo = null; leaveGame()">离开房间</button>
       </div>
@@ -636,6 +636,7 @@ const app = createApp({
     const qrBase = ref(0);
     const qrBonus = ref(0);
     const resetArmed = ref(false);
+    const srvStats = ref(null);
     const accountName = computed(() => account.currentUser() || '未登录');
     const checkedToday = computed(() => profile.value.checkinDate === todayStr());
     function fmtNum(n) { return String(n == null ? 0 : n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
@@ -752,12 +753,9 @@ const app = createApp({
           delta: fin.delta, winner: st.landlord,
         };
         stopOnlinePolling();
+        // 联机战绩独立展示，不写入本地账户（避免与单机本地档案混淆）
         net.serverProfile().then(r => {
-          if (r.ok) {
-            profile.value.points = r.user.points; profile.value.games = r.user.games;
-            profile.value.wins = r.user.wins; profile.value.coins = r.user.coins;
-            account.saveProfile(profile.value);
-          }
+          if (r.ok) srvStats.value = { points: r.user.points, games: r.user.games, wins: r.user.wins };
         });
       }
     }
@@ -890,7 +888,7 @@ const app = createApp({
       submitAuth, guestAuth, doLogout, modeSolo, goMulti, pickRoom, enterGame, leaveGame, roomLocked, canResume, resumeGame,
       EMOJIS, COLORS, amounts, rechargeYuan, qrInfo, qrCells, qrBase, qrBonus, resetArmed, accountName, checkedToday,
       fmtNum, totalCoins, doCheckin, saveProfile, setStyle, saveEmoji, resetAvatar, resetProfile, clearHistory, qrRecharge, confirmQr,
-      backStripe, kittyStripe, backPreviewStyle,
+      backStripe, kittyStripe, backPreviewStyle, srvStats,
       cardLabel,
       seat: p => snap.value ? snap.value.seatMeta[p] : null,
       isRed: c => c.suit === '♥' || c.suit === '♦',
