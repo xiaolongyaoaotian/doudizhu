@@ -740,7 +740,7 @@ const app = createApp({
         bombCount: st.bombCount, redraws: 0,
         handCounts: st.handCounts,
         points: st.base * multTotal * Math.pow(2, st.bombCount || 0),
-        roundText: st.roundText, trust: false, shown: st.shown,
+        last: st.last, roundText: st.roundText, trust: false, shown: st.shown,
         seatMeta: [null,
           seats[1] ? { name: seats[1].name, avatar: seats[1].avatar, color: seats[1].color, level: 'mid' } : null,
           seats[2] ? { name: seats[2].name, avatar: seats[2].avatar, color: seats[2].color, level: 'mid' } : null],
