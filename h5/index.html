@@ -81,12 +81,12 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .me-head .avatar{width:28px;height:28px;font-size:12px}
 .me-col{display:flex;flex-direction:column;gap:1px}
 .me-col .opp-count{font-size:10px}
-/* 手机竖屏：对局强制横显（旋转 90°，横持手机即为正向；基本功能页不受影响） */
-@media (max-width: 860px) and (orientation: portrait){
+/* 手机竖屏：对局强制横显（旋转 90°，横持手机即为正向；基本功能页不受影响；仅限触屏设备） */
+@media (max-width: 860px) and (orientation: portrait) and (pointer: coarse){
   .game-view.game-view{position:fixed;top:0;left:100vw;width:100vh;width:100lvh;height:100vw;min-height:0;transform:rotate(90deg);transform-origin:0 0;z-index:60;background:var(--felt)}
 }
 /* 手机横屏规格：紧凑对手牌堆，防与手牌/出牌区碰撞（旋转竖屏 + 物理横屏共用） */
-@media ((max-width: 860px) and (orientation: portrait)), ((orientation: landscape) and (max-height: 540px)){
+@media (((max-width: 860px) and (orientation: portrait)) or ((orientation: landscape) and (max-height: 540px))) and (pointer: coarse){
   :root{--cw:44px;--ch:60px;--rank:15px;--suit:11px}
   .opp{top:4px;width:132px}
   .opp .avatar{width:24px;height:24px;font-size:12px}
@@ -622,8 +622,10 @@ const app = createApp({
     function modeSolo() { roomOpen.value = true; }
     function goMulti() { location.href = location.pathname.indexOf('/h5/') === 0 ? 'online.html' : '/online/muti-fight'; }
     function pickRoom(r) { if (!roomLocked(r)) roomId.value = r.id; }
-    // 手机对局默认横屏：优先原生锁定（Android），失败则由 CSS 旋转兜底（iOS）
+    // 手机对局默认横屏：仅触屏设备生效（桌面/Mac 客户端不旋转不全屏），失败则由 CSS 旋转兜底（iOS）
+    const IS_MOBILE = window.matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) <= 860;
     async function tryLandscape() {
+      if (!IS_MOBILE) return;
       try {
         const el = document.documentElement;
         if (!document.fullscreenElement && el.requestFullscreen) await el.requestFullscreen({ navigationUI: 'hide' });
