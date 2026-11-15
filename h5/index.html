@@ -76,6 +76,9 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .hc-rank{font-size:var(--rank);font-weight:800;line-height:1}
 .hc-suit{font-size:var(--suit);line-height:1.1;margin-top:1px}
 .hc-suit.joker{font-size:calc(var(--rank)*0.45);font-weight:700;letter-spacing:.5px}
+.joker-face{font-size:calc(var(--rank)*1.35);line-height:1;display:inline-block;filter:grayscale(1) contrast(1.15)}
+.red .joker-face{filter:sepia(1) saturate(6) hue-rotate(-30deg)}
+.kitty-card .joker-face{font-size:calc(var(--kw)*0.55)}
 @keyframes robotFloat{0%{opacity:0;transform:translateX(-50%) translateY(8px) scale(.6)}20%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.1)}80%{opacity:1;transform:translateX(-50%) translateY(-4px) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-15px) scale(.8)}}
 .me-head{position:fixed;left:14px;bottom:6px;display:flex;align-items:center;gap:6px;background:rgba(10,47,36,.85);border:1px solid #2a8f6d;border-radius:10px;padding:5px 10px;z-index:30;cursor:pointer}
 .me-head .avatar{width:28px;height:28px;font-size:12px}
@@ -253,7 +256,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <div class="opp-cards">
           <template v-if="revealOpp(1)">
             <div v-for="c in snap.hands[1]" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
-              <div class="sc-rot"><span class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
+              <div class="sc-rot"><span v-if="c.joker" class="joker-face">🤡</span><span v-else class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
             </div>
           </template>
           <template v-else>
@@ -273,7 +276,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <div class="opp-cards right">
           <template v-if="revealOpp(2)">
             <div v-for="c in snap.hands[2]" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
-              <div class="sc-rot"><span class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
+              <div class="sc-rot"><span v-if="c.joker" class="joker-face">🤡</span><span v-else class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
             </div>
           </template>
           <template v-else>
@@ -286,7 +289,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <template v-if="snap && snap.shown && snap.shown[1]">
           <template v-if="!snap.shown[1].pass">
             <div v-for="c in snap.shown[1].cards" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
-              <div class="sc-rot"><span class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
+              <div class="sc-rot"><span v-if="c.joker" class="joker-face">🤡</span><span v-else class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
             </div>
           </template>
           <span v-else class="pass-pill">不出</span>
@@ -296,7 +299,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <template v-if="snap && snap.shown && snap.shown[2]">
           <template v-if="!snap.shown[2].pass">
             <div v-for="c in snap.shown[2].cards" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
-              <div class="sc-rot"><span class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
+              <div class="sc-rot"><span v-if="c.joker" class="joker-face">🤡</span><span v-else class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
             </div>
           </template>
           <span v-else class="pass-pill">不出</span>
@@ -307,7 +310,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <div class="kitty">
           <template v-if="snap && snap.started && snap.phase !== 'bid'">
             <div v-for="c in snap.kitty" :key="c.id" class="kitty-card" :class="{red:isRed(c)}">
-              <span class="hc-rank">{{ cardLabel(c) }}</span>
+              <span v-if="c.joker" class="joker-face">🤡</span>
+              <span v-else class="hc-rank">{{ cardLabel(c) }}</span>
               <span class="hc-suit" v-if="!c.joker">{{ c.suit }}</span>
               <span class="hc-suit joker" v-else>JOKER</span>
             </div>
@@ -325,7 +329,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
         <template v-if="snap && snap.shown && snap.shown[0]">
           <template v-if="!snap.shown[0].pass">
             <div v-for="c in snap.shown[0].cards" :key="c.id" class="shown-card" :class="{red:isRed(c)}">
-              <div class="sc-rot"><span class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
+              <div class="sc-rot"><span v-if="c.joker" class="joker-face">🤡</span><span v-else class="sc-rank">{{ cardLabel(c) }}</span><span class="sc-suit" v-if="!c.joker">{{ c.suit }}</span></div>
             </div>
           </template>
           <span v-else class="pass-pill">你不出</span>
@@ -368,7 +372,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       <div class="hand">
         <div v-for="c in myHand" :key="c.id" class="hand-card"
           :class="[{red:isRed(c)}, selected.includes(c.id) ? 'sel' : '']" @click="toggleCard(c)">
-          <span class="hc-rank">{{ cardLabel(c) }}</span>
+          <span v-if="c.joker" class="joker-face">🤡</span>
+          <span v-else class="hc-rank">{{ cardLabel(c) }}</span>
           <span class="hc-suit" v-if="!c.joker">{{ c.suit }}</span>
           <span class="hc-suit joker" v-else>JOKER</span>
         </div>
@@ -937,7 +942,7 @@ const app = createApp({
       backStripe, kittyStripe, backPreviewStyle, srvStats,
       cardLabel,
       seat: p => snap.value ? snap.value.seatMeta[p] : null,
-      isRed: c => c.suit === '♥' || c.suit === '♦',
+      isRed: c => c.suit === '♥' || c.suit === '♦' || (c.joker && c.rank === 17),
       showRole: p => !!(snap.value && snap.value.started && snap.value.phase !== 'bid' && snap.value.landlord === p),
       revealOpp: p => !!(profile.value.open && snap.value && snap.value.started),
     };
