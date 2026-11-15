@@ -85,6 +85,22 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 @media (max-width: 860px) and (orientation: portrait){
   .game-view.game-view{position:fixed;top:0;left:100vw;width:100vh;width:100lvh;height:100vw;min-height:0;transform:rotate(90deg);transform-origin:0 0;z-index:60;background:var(--felt)}
 }
+/* 手机横屏规格：紧凑对手牌堆，防与手牌/出牌区碰撞（旋转竖屏 + 物理横屏共用） */
+@media ((max-width: 860px) and (orientation: portrait)), ((orientation: landscape) and (max-height: 540px)){
+  .opp{top:4px}
+  .opp .avatar{width:24px;height:24px;font-size:12px}
+  .opp-name{font-size:11px;max-width:64px}
+  .opp-count{font-size:10px}
+  .opp-cards .card-back{width:calc(var(--cw)*0.72);height:calc(var(--cw)*0.5);margin-top:calc(var(--cw)*-0.36);border-radius:4px}
+  .opp-cards .card-back .back-face{font-size:12px}
+  .play-zone{max-height:calc(var(--ch)*1.7)}
+  .shown-card{width:calc(var(--ch)*0.66);height:calc(var(--cw)*0.68);margin-top:calc(var(--cw)*-0.46)}
+  .sc-rot{padding:3px 0 0 4px}
+  .center{padding:4px calc(var(--pz-left) + 8px) 0}
+  .my-shown{max-width:100%}
+  .me-head{padding:3px 8px}
+  .me-head .avatar{width:22px;height:22px;font-size:11px}
+}
 .mask{position:fixed;inset:0;background:rgba(4,18,13,.78);display:flex;align-items:center;justify-content:center;z-index:100}
 .panel{width:280px;max-width:92%;background:linear-gradient(180deg,#14493a,#0d3529);border:1px solid #e7c76666;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
 .panel h3{font-size:18px;font-weight:800;color:var(--gold);text-align:center}
