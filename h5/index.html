@@ -594,7 +594,7 @@ const app = createApp({
     const picked = computed(() => ROOMS.find(r => r.id === roomId.value) || ROOMS[0]);
     function roomLocked(r) { return profile.value.coins < r.base * 2; }   // 入场门槛：2 倍底数
     function modeSolo() { roomOpen.value = true; }
-    function goMulti() { location.href = 'online.html'; }
+    function goMulti() { location.href = location.pathname.indexOf('/h5/') === 0 ? 'online.html' : '/online/muti-fight'; }
     function pickRoom(r) { if (!roomLocked(r)) roomId.value = r.id; }
     function enterGame() {
       if (roomLocked(picked.value)) return;

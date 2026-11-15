@@ -267,7 +267,8 @@
     <div class="hero-sub" data-i18n="hero_sub">经典规则 · 联机对战 · 三档 AI · 随时随地开一局</div>
     <div class="hero-cta">
       <a class="dl-big" href="#download" data-i18n="dl_game">下载游戏</a>
-      <a class="play-web" id="play-web-btn" href="/h5/" target="_blank" rel="noopener">🌐 <span data-i18n="play_web">网页版立即玩</span></a>
+      <a class="play-web" id="play-web-btn" href="/online">🌐 <span data-i18n="play_web">网页版立即玩</span></a>
+      <a class="play-web" href="/online/muti-fight">⚔ <span>联机对战</span></a>
     </div>
     <div class="hero-tip" data-i18n="hero_tip">支持 Android / iOS / 网页版 · 网页版无需下载直接开玩</div>
   </div>
@@ -415,8 +416,8 @@ const I18N = {
     foot_2: 'Play responsibly. Moderate gaming benefits the mind.',
   },
 };
-// 网页版游戏地址：GitHub Pages 域名领取后，把 '/h5/' 替换为完整域名（如 'https://user.github.io/repo/h5/'）
-const H5_URL = 'https://xiaolongyaoaotian.github.io/doudizhu/h5/';
+// 网页版游戏地址：本站伺服 /online（h5 静态托管时替换为对应地址）
+const H5_URL = '/online';
 document.getElementById('play-web-btn').href = H5_URL;
 document.getElementById('dl-web-link').href = H5_URL;
 let lang = localStorage.getItem('ddz-lang') || 'zh';

@@ -9,6 +9,13 @@ import json, os, sys, time, uuid, random, hashlib, threading, re, base64
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+
+def _asset_dir(sub):
+    """静态资产目录：VM 部署时与 server.py 同级；仓库开发时位于项目根（server.py 在 backend/ 内）"""
+    d1 = os.path.join(ROOT, sub)
+    if os.path.isdir(d1):
+        return d1
+    return os.path.abspath(os.path.join(ROOT, '..', sub))
 sys.path.insert(0, ROOT)
 import db as dbmod
 DATA_DIR = DATA_DIR_ = os.path.join(ROOT, 'data')
@@ -658,6 +665,17 @@ class Handler(BaseHTTPRequestHandler):
                 if os.path.exists(fp):
                     return self._serve_file(fp, 'text/html; charset=utf-8')
                 return self._serve_file(os.path.join(ROOT, 'web', 'h5-coming.html'), 'text/html; charset=utf-8')
+            if path in ('/online', '/online/'):
+                fp = os.path.join(_asset_dir('h5'), 'index.html')
+                return self._serve_file(fp, 'text/html; charset=utf-8')
+            if path == '/online/muti-fight':
+                fp = os.path.join(_asset_dir('h5'), 'online.html')
+                return self._serve_file(fp, 'text/html; charset=utf-8')
+            if path.startswith('/common/'):
+                fp = os.path.join(_asset_dir('common'), os.path.basename(path))
+                if os.path.exists(fp):
+                    return self._serve_file(fp, 'application/javascript; charset=utf-8')
+                return self._json(404, {'ok': False, 'error': 'file not found'})
             if path == '/api/faq':
                 return self._json(200, {'ok': True, 'faq': FAQ})
             if path.startswith('/api/player/'):

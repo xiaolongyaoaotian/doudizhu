@@ -102,13 +102,16 @@ globalThis.uni = {
   },
 };
 const net = await import('../common/net.js');
+// 部署模式：本站伺服（/online/muti-fight）时同源连接；h5 静态托管时手填地址
+const VM_MODE = location.pathname.indexOf('/online/muti-fight') === 0;
+const GAME_URL = VM_MODE ? '/online' : 'index.html';
 
 createApp({
   setup() {
     const cfg = ref(net.netConfig());
     const netReady = ref(net.isOnline());
     const mode = ref('login');
-    const server = ref(cfg.value.server || '');
+    const server = ref(cfg.value.server || (VM_MODE ? location.origin : ''));
     const name = ref(cfg.value.username || '');
     const pwd = ref('');
     const errMsg = ref('');
@@ -187,14 +190,14 @@ createApp({
       net.roomStart(roomInfo.value.id).then(r => { if (!r.ok) { fail(r); return; } matched.value = true; onlineGameId.value = r.gameId; });
     }
 
-    function enterGame() { location.href = 'index.html?online=' + encodeURIComponent(onlineGameId.value); }
+    function enterGame() { location.href = GAME_URL + '?online=' + encodeURIComponent(onlineGameId.value); }
     function leave() {
       if (pollTimer) clearInterval(pollTimer);
       if (onlineGameId.value) net.gameQuit(onlineGameId.value);
       if (roomInfo.value) net.roomLeave(roomInfo.value.id);
       matched.value = false; onlineGameId.value = ''; roomInfo.value = null; isHost.value = false;
     }
-    function back() { location.href = 'index.html'; }
+    function back() { location.href = GAME_URL; }
 
     onMounted(() => { if (netReady.value) reconnect(); });
     window.addEventListener('beforeunload', () => { if (pollTimer) clearInterval(pollTimer); });
