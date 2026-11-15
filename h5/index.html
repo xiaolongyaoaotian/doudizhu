@@ -755,7 +755,7 @@ const app = createApp({
         net.serverProfile().then(r => {
           if (r.ok) {
             profile.value.points = r.user.points; profile.value.games = r.user.games;
-            profile.value.wins = r.user.wins; profile.value.coins = r.user.points;
+            profile.value.wins = r.user.wins; profile.value.coins = r.user.coins;
             account.saveProfile(profile.value);
           }
         });

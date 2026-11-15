@@ -767,7 +767,7 @@ class Handler(BaseHTTPRequestHandler):
             if path == '/api/match/cancel':
                 return self._api_match_cancel()
             if path == '/api/room/create':
-                return self._api_room_create()
+                return self._api_room_create(body)
             if path == '/api/room/join':
                 return self._api_room_join(body)
             if path == '/api/room/spectate':
@@ -1099,11 +1099,11 @@ class Handler(BaseHTTPRequestHandler):
         return self._json(200, {'ok': True})
 
     # ---- 房间 ----
-    def _api_room_create(self):
+    def _api_room_create(self, body):
         name, u = self._user()
         if not name:
             return self._json(401, {'ok': False, 'error': '未登录'})
-        rb = int(self._body().get('base') or 1)
+        rb = int(body.get('base') or 1)
         if rb not in (1, 100, 1000, 10000, 100000):
             rb = 1
         rid = str(random.randint(100000, 999999))
