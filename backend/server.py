@@ -659,6 +659,18 @@ class Handler(BaseHTTPRequestHandler):
                         self.wfile.write(f.read())
                     return
                 return self._json(404, {'ok': False, 'error': '安装包未就绪'})
+            if path == '/download/win':
+                fp = os.path.join(_asset_dir('downloads'), 'Doudizhu-win-x64.zip')
+                if os.path.exists(fp):
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/zip')
+                    self.send_header('Content-Disposition', 'attachment; filename="Doudizhu-win-x64.zip"')
+                    self.send_header('Content-Length', str(os.path.getsize(fp)))
+                    self.end_headers()
+                    with open(fp, 'rb') as f:
+                        self.wfile.write(f.read())
+                    return
+                return self._json(404, {'ok': False, 'error': '安装包未就绪'})
             if path == '/download/ios':
                 self.send_response(302)
                 self.send_header('Location', 'https://apps.apple.com/')
