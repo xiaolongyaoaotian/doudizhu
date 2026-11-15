@@ -33,7 +33,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .avatar.rose{background:#a04a56}
 .opp-cards{display:flex;flex-direction:column;align-items:flex-start}
 .opp-cards.right{align-items:flex-end}
-.card-back{width:var(--ch);height:var(--cw);border-radius:6px;margin-top:calc(var(--cw)*-0.52);background:repeating-linear-gradient(45deg,#1f7a5c 0 7px,#175d46 7px 14px);border:1px solid rgba(231,199,102,.4);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.card-back{width:var(--ch);height:var(--cw);border-radius:6px;margin-top:calc(var(--cw)*-0.55);background:repeating-linear-gradient(45deg,#1f7a5c 0 7px,#175d46 7px 14px);border:1px solid rgba(231,199,102,.4);box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .card-back:first-child{margin-top:0}
 .play-zone{position:absolute;display:flex;flex-direction:column;align-items:flex-start;width:calc(var(--ch)*1.15);max-height:calc(var(--ch)*2.6);overflow:hidden}
 .play-l{left:var(--pz-left);top:var(--pz-top)}.play-r{right:var(--pz-left);top:var(--pz-top);align-items:flex-end}
@@ -44,7 +44,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .sc-rank{font-size:var(--rank);font-weight:800;line-height:1}
 .sc-suit{font-size:var(--suit);line-height:1;margin-top:1px}
 .pass-pill{font-size:11px;color:#bfe3d0;border:1px solid #2a8f6d;border-radius:12px;padding:3px 12px;background:rgba(15,77,58,.5)}
-.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;padding:6px 0 2px;min-height:0}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;padding:6px calc(var(--pz-left)) 12px;min-height:0}
 .kitty{display:flex;align-items:center;gap:4px}
 .kitty-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;width:var(--kw);height:var(--kh);border-radius:5px;background:#fffef8;border:1px solid #d8d5c6;color:#23252b;padding:3px 0 0 4px}
 .kitty-card.red{color:#b3372e}
@@ -52,8 +52,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .kitty-card .hc-suit{font-size:calc(var(--kw)*0.23)}
 .kitty-card .hc-suit.joker{font-size:calc(var(--kw)*0.14);letter-spacing:.3px}
 .kitty-label{font-size:10px;color:var(--sub);margin-left:4px}
-.round{font-size:12px;color:#ffe9a8;text-align:center}
-.mult{font-size:10px;color:#c8d8c0;text-align:center}
+.round{font-size:12px;color:#ffe9a8;text-align:center;line-height:16px}
+.mult{display:block;font-size:10px;color:#c8d8c0;text-align:center;line-height:14px}
 /* 下方出牌区：正常竖放卡牌，堆叠排列 */
 .my-shown{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;min-height:calc(var(--ch) + 8px);max-width:96%}
 .my-shown .shown-card{margin-top:0;width:var(--cw);height:var(--ch);margin-left:calc(var(--hov) + 6px);position:relative;flex-direction:column;align-items:flex-start;padding:4px 0 0 5px;border-radius:5px;overflow:visible}
@@ -92,11 +92,15 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
   .opp .avatar{width:24px;height:24px;font-size:12px}
   .opp-name{font-size:11px;max-width:56px}
   .opp-count{font-size:10px}
-  .opp-cards .card-back{margin-top:calc(var(--cw)*-0.84)}
+  .opp-cards .card-back{margin-top:calc(var(--cw)*-1.045)}
   .opp-cards .card-back:first-child{margin-top:0}
+  .opp-cards .card-back:nth-child(n+10), .opp-cards .shown-card:nth-child(n+10){display:none}
+  .opp-cards .shown-card{margin-top:calc(var(--cw)*-1.045)}
+  .opp-cards .shown-card:first-child{margin-top:0}
   .opp-cards .card-back .back-face{font-size:12px}
-  .play-zone{max-height:calc(var(--ch)*1.9)}
-  .shown-card{margin-top:calc(var(--cw)*-0.9)}
+  .play-zone{max-height:none}
+  .shown-card{margin-top:calc(var(--cw)*-0.68)}
+  .play-zone .shown-card:first-child{margin-top:0}
   .sc-rot{padding:3px 0 0 4px}
   .center{padding:4px calc(var(--pz-left) + 8px) 0}
   .my-shown{max-width:100%}
@@ -314,7 +318,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
           <span class="kitty-label">底牌</span>
         </div>
         <span class="round">{{ snap ? snap.roundText : '准备好了吗？' }}</span>
-        <span v-if="snap && snap.started && snap.phase !== 'bid'" class="mult">底分 {{ snap.base }} · ×{{ snap.points / snap.base }}</span>
+        <span class="mult">{{ snap && snap.started && snap.phase !== 'bid' ? ('底分 ' + snap.base + ' · ×' + (snap.points / snap.base)) : '\u00a0' }}</span>
       </div>
 
       <div class="my-shown">
@@ -331,7 +335,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       </div>
 
       <div class="actions">
-        <div v-if="hintMsg" class="hint-line">{{ hintMsg }}</div>
+        <div class="hint-line">{{ hintMsg || '\u00a0' }}</div>
         <template v-if="dealing"><button class="btn disabled" disabled>发牌中…</button></template>
         <template v-else-if="!snap || snap.phase === 'idle' || snap.phase === 'over'">
           <button class="btn primary" @click="startGame">开始游戏</button>
