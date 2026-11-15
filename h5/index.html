@@ -20,11 +20,11 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .mini-btn.gold{background:var(--gold);color:var(--ink);font-weight:700;border-color:#d9b76e}
 .coin-pill{font-size:11px;color:#ffe9a8;background:rgba(10,47,36,.7);border:1px solid #e7c76666;border-radius:14px;padding:4px 10px;font-weight:700}
 .table{position:relative;flex:1;margin:4px 6px;border-radius:14px;padding:10px;background:radial-gradient(ellipse at 50% 30%,var(--felt2),#0a382b 100%);border:2px solid var(--line);overflow:hidden;display:flex;flex-direction:column}
-.opp{position:absolute;top:10px;display:flex;flex-direction:column;gap:4px;max-width:170px}
+.opp{position:absolute;top:10px;display:flex;flex-direction:column;gap:4px;width:170px}
 .opp-a{left:8px;align-items:flex-start}
 .opp-b{right:8px;align-items:flex-end}
-.opp-info{display:flex;align-items:center;gap:5px;flex-wrap:wrap;max-width:100%}
-.opp-name{font-size:12px;color:#f0ead5;font-weight:600;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opp-info{display:flex;align-items:center;gap:5px;flex-wrap:nowrap}
+.opp-name{font-size:12px;color:#f0ead5;font-weight:600;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .opp-count{font-size:11px;color:var(--sub);white-space:nowrap}
 .level-tag{font-size:9px;color:#fff;border-radius:6px;padding:1px 5px;font-weight:700}
 .level-tag.low{background:#b07d3a}.level-tag.mid{background:#6d7f8f}.level-tag.high{background:#c9a13b;color:var(--ink)}
@@ -33,11 +33,11 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .avatar.rose{background:#a04a56}
 .opp-cards{display:flex;flex-direction:column;align-items:flex-start}
 .opp-cards.right{align-items:flex-end}
-.card-back{width:calc(var(--cw)*1.15);height:calc(var(--cw)*0.78);border-radius:6px;margin-top:calc(var(--cw)*-0.52);background:repeating-linear-gradient(45deg,#1f7a5c 0 7px,#175d46 7px 14px);border:1px solid rgba(231,199,102,.4);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.card-back{width:var(--ch);height:var(--cw);border-radius:6px;margin-top:calc(var(--cw)*-0.52);background:repeating-linear-gradient(45deg,#1f7a5c 0 7px,#175d46 7px 14px);border:1px solid rgba(231,199,102,.4);box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .card-back:first-child{margin-top:0}
 .play-zone{position:absolute;display:flex;flex-direction:column;align-items:flex-start;width:calc(var(--ch)*1.15);max-height:calc(var(--ch)*2.6);overflow:hidden}
 .play-l{left:var(--pz-left);top:var(--pz-top)}.play-r{right:var(--pz-left);top:var(--pz-top);align-items:flex-end}
-.shown-card{position:relative;width:calc(var(--ch)*0.9);height:calc(var(--cw)*0.92);border-radius:6px;margin-top:calc(var(--cw)*-0.58);background:#fffef8;border:1px solid #d8d5c6;color:#23252b;box-shadow:0 1px 4px rgba(0,0,0,.25);overflow:hidden}
+.shown-card{position:relative;width:var(--ch);height:var(--cw);border-radius:6px;margin-top:calc(var(--cw)*-0.55);background:#fffef8;border:1px solid #d8d5c6;color:#23252b;box-shadow:0 1px 4px rgba(0,0,0,.25);overflow:hidden}
 .shown-card:first-child{margin-top:0}
 .shown-card.red{color:#b3372e}
 .sc-rot{position:absolute;left:50%;top:50%;width:var(--cw);height:var(--ch);display:flex;flex-direction:column;align-items:flex-start;padding:4px 0 0 5px;transform:translate(-50%,-50%) rotate(90deg)}
@@ -87,14 +87,16 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 }
 /* 手机横屏规格：紧凑对手牌堆，防与手牌/出牌区碰撞（旋转竖屏 + 物理横屏共用） */
 @media ((max-width: 860px) and (orientation: portrait)), ((orientation: landscape) and (max-height: 540px)){
-  .opp{top:4px}
+  :root{--cw:44px;--ch:60px;--rank:15px;--suit:11px}
+  .opp{top:4px;width:132px}
   .opp .avatar{width:24px;height:24px;font-size:12px}
-  .opp-name{font-size:11px;max-width:64px}
+  .opp-name{font-size:11px;max-width:56px}
   .opp-count{font-size:10px}
-  .opp-cards .card-back{width:calc(var(--cw)*0.72);height:calc(var(--cw)*0.5);margin-top:calc(var(--cw)*-0.36);border-radius:4px}
+  .opp-cards .card-back{margin-top:calc(var(--cw)*-0.84)}
+  .opp-cards .card-back:first-child{margin-top:0}
   .opp-cards .card-back .back-face{font-size:12px}
-  .play-zone{max-height:calc(var(--ch)*1.7)}
-  .shown-card{width:calc(var(--ch)*0.66);height:calc(var(--cw)*0.68);margin-top:calc(var(--cw)*-0.46)}
+  .play-zone{max-height:calc(var(--ch)*1.9)}
+  .shown-card{margin-top:calc(var(--cw)*-0.9)}
   .sc-rot{padding:3px 0 0 4px}
   .center{padding:4px calc(var(--pz-left) + 8px) 0}
   .my-shown{max-width:100%}
