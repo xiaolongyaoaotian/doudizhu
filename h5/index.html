@@ -525,7 +525,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <script type="module">
 const { createApp, ref, computed, onMounted } = Vue;
 const engine = await import('../common/ddz-engine.js');
-const { DDZGame, label: cardLabel } = engine;
+const { DDZGame, label: cardLabel, findResponse, bestLead } = engine;
 
 // uni 存储垫片：account.js 依赖 uni.*StorageSync，网页版映射到 localStorage
 globalThis.uni = {
@@ -800,6 +800,15 @@ const app = createApp({
       gameRef.value.humanPlay(cards);
     }
     function doHint() {
+      if (onlineMode.value) {
+        const s = snap.value;
+        if (!s || s.phase !== 'play') return;
+        const last = s.last && s.last.player !== 0 ? s.last.combo : null;
+        const h = last ? findResponse(myHand.value, last, { bombs: true }) : bestLead(myHand.value);
+        if (h && h.length) { selected.value = h.map(c => c.id); hintMsg.value = '已为你选牌，点「出牌」确认'; }
+        else hintMsg.value = canPass.value ? '没有能压过的牌，点「不出」过牌' : '轮到你领出';
+        return;
+      }
       const h = gameRef.value.hint();
       if (h && h.length) { selected.value = h.map(c => c.id); hintMsg.value = '已选牌，点「出牌」'; }
       else hintMsg.value = canPass.value ? '没有能压过的牌，可「不出」' : '轮到你领出';
