@@ -83,6 +83,31 @@
   .fcard.king { background: linear-gradient(160deg,#ffe9b0,#f0a93c); color: #7d3742; width: 60px; text-align:center; align-items:center; padding-left: 0; font-size: 13px; }
   @keyframes ffloat { 0%,100% { transform: translateY(0) rotate(var(--rot)); } 50% { transform: translateY(-22px) rotate(var(--rot)); } }
   .hero-inner { position: relative; text-align: center; z-index: 2; padding: 0 20px; }
+  .hero-ad { position: relative; z-index: 3; display: flex; align-items: center; gap: 44px; max-width: 1180px; margin: 0 auto; padding: 70px 36px; width: 100%; text-align: left; }
+  .ad-copy { flex: 1.05; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; min-width: 0; }
+  .ad-tag { font-size: 13px; font-weight: 800; color: var(--ink); background: linear-gradient(90deg, #ffd76e, #f0a93c); border-radius: 20px; padding: 6px 16px; box-shadow: 0 6px 18px rgba(240,169,60,.35); }
+  .ad-title { font-size: clamp(42px, 5vw, 74px); font-weight: 900; color: var(--gold); line-height: 1.04; text-shadow: 0 4px 26px rgba(0,0,0,.5); letter-spacing: 2px; }
+  .ad-slogan { color: #e8dcbf; font-size: clamp(14px, 1.6vw, 19px); }
+  .ad-feats { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  .ad-feats li { font-size: 13px; color: #d9e8d0; font-weight: 600; }
+  .ad-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+  .badge-btn { display: flex; align-items: center; gap: 10px; background: rgba(8, 26, 20, .85); border: 1px solid #2a8f6d; border-radius: 12px; padding: 8px 16px; color: var(--cream); text-decoration: none; transition: transform .15s, border-color .15s; }
+  .badge-btn b { font-size: 20px; line-height: 1; }
+  .badge-btn span { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+  .badge-btn small { font-size: 10px; color: var(--sub); }
+  .badge-btn i { font-style: normal; font-size: 14px; font-weight: 700; }
+  .badge-btn:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .ad-cta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .ad-note { font-size: 11px; color: var(--sub); }
+  .ad-visual { flex: 0.85; position: relative; min-width: 0; }
+  .ad-visual img { width: 100%; max-width: 500px; display: block; filter: drop-shadow(0 34px 60px rgba(0, 0, 0, .55)); animation: adFloat 5.5s ease-in-out infinite alternate; }
+  @keyframes adFloat { from { transform: translateY(-10px); } to { transform: translateY(12px); } }
+  @media (max-width: 900px) {
+    .hero-ad { flex-direction: column-reverse; gap: 18px; padding: 46px 22px 40px; text-align: center; }
+    .ad-copy { align-items: center; }
+    .ad-feats, .ad-badges, .ad-cta { justify-content: center; }
+    .ad-visual img { max-width: 330px; }
+  }
   .hero-suit { font-size: clamp(40px, 7vw, 76px); color: var(--gold); letter-spacing: 14px; text-shadow: 0 8px 40px rgba(231,199,102,.4); }
   .hero-title {
     font-size: clamp(38px, 7.5vw, 88px); font-weight: 900; letter-spacing: 12px;
@@ -266,15 +291,28 @@
     <div class="fcard king" style="right:34%; bottom:8%; --rot:-8deg; animation-delay:.1s">小王<br>JOKER</div>
   </div>
   <div class="hero-inner">
-    <div class="hero-suit">♠ ♥ ♣ ♦</div>
-    <h1 class="hero-title" data-i18n="hero_title">牌友斗地主</h1>
-    <div class="hero-sub" data-i18n="hero_sub">经典规则 · 联机对战 · 三档 AI · 随时随地开一局</div>
-    <div class="hero-cta">
-      <a class="dl-big" href="#download" data-i18n="dl_game">下载游戏</a>
-      <a class="play-web" id="play-web-btn" href="/online">🌐 <span data-i18n="play_web">网页版立即玩</span></a>
-      <a class="play-web" href="/online/muti-fight">⚔ <span>联机对战</span></a>
+    <div class="hero-ad">
+      <div class="ad-copy">
+        <span class="ad-tag" data-i18n="ad_tag">🎉 全平台上线 · 限时免费</span>
+        <h1 class="ad-title" data-i18n="hero_title">牌友斗地主</h1>
+        <div class="ad-slogan" data-i18n="ad_slogan">欢乐开局 · 赢在指尖</div>
+        <ul class="ad-feats">
+          <li data-i18n="f1">✓ 真人联机 · 好友房间</li>
+          <li data-i18n="f2">✓ 三档 AI 智能对战</li>
+          <li data-i18n="f3">✓ 公平匹配 · 无广告</li>
+        </ul>
+        <div class="ad-badges">
+          <a class="badge-btn" href="/download/win"><b>⊞</b><span><small data-i18n="bw_avail">适用于</small><i>Windows 10/11</i></span></a>
+          <a class="badge-btn" href="/download/mac"><b></b><span><small data-i18n="bw_avail">适用于</small><i>macOS 12+</i></span></a>
+        </div>
+        <div class="ad-cta">
+          <a class="dl-big" href="/online" data-i18n="play_web">🌐 网页版立即玩</a>
+          <a class="play-web" href="/online/muti-fight">⚔ <span>联机对战</span></a>
+        </div>
+        <div class="ad-note" data-i18n="hero_tip">支持 Android / iOS / 网页版 · 网页版无需下载直接开玩</div>
+      </div>
+      <div class="ad-visual"><img src="/ad-art.png" alt=""></div>
     </div>
-    <div class="hero-tip" data-i18n="hero_tip">支持 Android / iOS / 网页版 · 网页版无需下载直接开玩</div>
   </div>
   <div class="age-badge"><b>12+</b><span>CADPA</span></div>
 </div>
@@ -371,6 +409,9 @@ const I18N = {
     brand: '牌友斗地主', hello: '您好，游客 <b>【登录】</b>',
     n1: '首页', n2: '游戏截图', n3: '游戏特色', n4: '新闻资讯', n5: '下载中心', n6: '客服支持',
     hero_title: '牌友斗地主', hero_sub: '经典规则 · 联机对战 · 三档 AI · 随时随地开一局',
+    ad_tag: '🎉 全平台上线 · 限时免费', ad_slogan: '欢乐开局 · 赢在指尖',
+    f1: '✓ 真人联机 · 好友房间', f2: '✓ 三档 AI 智能对战', f3: '✓ 公平匹配 · 无广告',
+    bw_avail: '适用于',
     dl_game: '下载游戏', play_web: '网页版立即玩', hero_tip: '支持 Android / iOS / 网页版 · 网页版无需下载直接开玩',
     ev_tag: '限时活动', ev_h: '每日签到 领 2000 积分', ev_p: '登录游戏即可签到，连续签到积分翻倍，对战胜利再拿底分×加倍×炸弹积分！', ev_date: '活动长期有效 · 每天 00:00 刷新',
     nt_new: '最新', nt_news: '新闻', nt_notice: '公告', nt_event: '活动',
@@ -397,6 +438,9 @@ const I18N = {
     brand: 'PaiYou DDZ', hello: 'Hello, guest <b>【Sign In】</b>',
     n1: 'Home', n2: 'Screenshots', n3: 'Features', n4: 'News', n5: 'Download', n6: 'Support',
     hero_title: 'PaiYou Dou Dizhu', hero_sub: 'Classic rules · Online play · Three AI tiers · Anywhere, anytime',
+    ad_tag: '🎉 Now live · Free to play', ad_slogan: 'Deal me in · Win with style',
+    f1: '✓ Online rooms · Play with friends', f2: '✓ Three-tier AI battles', f3: '✓ Fair matching · No ads',
+    bw_avail: 'Available for',
     dl_game: 'Download', play_web: 'Play in Browser', hero_tip: 'Android / iOS / Web · play instantly in the browser',
     ev_tag: 'EVENT', ev_h: 'Daily Check-in: 2000 Points', ev_p: 'Sign in every day for points. Winning games earns base × multiplier × bombs!',
     ev_date: 'Long-term event · resets daily at 00:00',
@@ -423,8 +467,8 @@ const I18N = {
 };
 // 网页版游戏地址：本站伺服 /online（h5 静态托管时替换为对应地址）
 const H5_URL = '/online';
-document.getElementById('play-web-btn').href = H5_URL;
-document.getElementById('dl-web-link').href = H5_URL;
+const _dwl = document.getElementById('dl-web-link');
+if (_dwl) _dwl.href = H5_URL;
 let lang = localStorage.getItem('ddz-lang') || 'zh';
 function applyLang() {
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
