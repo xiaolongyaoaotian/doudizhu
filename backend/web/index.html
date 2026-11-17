@@ -61,6 +61,8 @@
     overflow: hidden;
   }
   .hero-art { position: absolute; inset: 0; pointer-events: none; }
+  .hero-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 62%; z-index: 0; }
+  .hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,47,38,.62), rgba(10,47,38,.32) 46%, rgba(10,47,38,.68)); z-index: 1; }
   .hero-art .glow {
     position: absolute; left: 50%; top: 42%; width: 900px; height: 420px; transform: translate(-50%,-50%);
     background: radial-gradient(ellipse, rgba(255,215,110,.22), transparent 65%);
@@ -252,6 +254,8 @@
 
 <a id="top"></a>
 <div class="hero">
+  <img class="hero-cover" src="/cover.png" alt="">
+  <div class="hero-shade"></div>
   <div class="hero-art">
     <div class="glow"></div>
     <div class="fcard" style="left:8%; top:16%; --rot:-14deg; animation-delay:.2s">A<small>♠</small></div>
