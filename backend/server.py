@@ -647,6 +647,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(body)
                 return
+            if path == '/promo.png':
+                return self._serve_file(os.path.join(_asset_dir('web'), 'promo.png'), 'image/png')
             if path == '/cover.png':
                 return self._serve_file(os.path.join(_asset_dir('web'), 'cover.png'), 'image/png')
             if path == '/ad-art.png':
