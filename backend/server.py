@@ -647,6 +647,12 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(body)
                 return
+            if path == '/favicon.ico':
+                return self._serve_file(os.path.join(_asset_dir('web'), 'favicon.ico'), 'image/x-icon')
+            if path == '/favicon-32.png':
+                return self._serve_file(os.path.join(_asset_dir('web'), 'favicon-32.png'), 'image/png')
+            if path == '/apple-touch-icon.png':
+                return self._serve_file(os.path.join(_asset_dir('web'), 'apple-touch-icon.png'), 'image/png')
             if path == '/promo.png':
                 return self._serve_file(os.path.join(_asset_dir('web'), 'promo.png'), 'image/png')
             if path == '/cover.png':
