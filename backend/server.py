@@ -690,11 +690,12 @@ class Handler(BaseHTTPRequestHandler):
                     ctype = {'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'webp': 'image/webp', 'gif': 'image/gif'}.get(ext, 'application/octet-stream')
                     return self._serve_file(fp, ctype)
                 return self._json(404, {'ok': False, 'error': 'file not found'})
-            if path == '/h5/':
-                fp = os.path.join(ROOT, 'web', 'h5', 'index.html')
-                if os.path.exists(fp):
-                    return self._serve_file(fp, 'text/html; charset=utf-8')
-                return self._serve_file(os.path.join(ROOT, 'web', 'h5-coming.html'), 'text/html; charset=utf-8')
+            if path == '/h5/' or path == '/h5':
+                self.send_response(302)
+                self.send_header('Location', '/online')
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+                return
             if path in ('/online', '/online/'):
                 fp = os.path.join(_asset_dir('h5'), 'index.html')
                 return self._serve_file(fp, 'text/html; charset=utf-8')
