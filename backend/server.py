@@ -659,6 +659,11 @@ class Handler(BaseHTTPRequestHandler):
                 return self._serve_file(os.path.join(_asset_dir('web'), 'cover.png'), 'image/png')
             if path == '/ad-art.png':
                 return self._serve_file(os.path.join(_asset_dir('web'), 'ad-art.png'), 'image/png')
+            if path == '/download/SHA256SUMS.txt':
+                fp = os.path.join(_asset_dir('downloads'), 'SHA256SUMS.txt')
+                if os.path.exists(fp):
+                    return self._serve_file(fp, 'text/plain; charset=utf-8')
+                return self._json(404, {'ok': False, 'error': 'file not found'})
             if path == '/download/mac':
                 fp = os.path.join(_asset_dir('downloads'), 'Doudizhu-mac-arm64.zip')
                 if os.path.exists(fp):
